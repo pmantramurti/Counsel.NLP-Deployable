@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Advisor Chatbot</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+    <style>
+        body {
+            background-color: #4fbeda;
+        }
+        .chat-container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            background: #0a72a7;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .chatbox {
+            height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background: #4fbeda;
+        }
+        .user-message {
+            background: white; /* Blue for user messages */
+            color: black;
+            padding: 8px 12px;
+            border-radius: 10px;
+            display: inline-block;
+            max-width: 75%;
+            text-align: right;
+        }
+
+        .bot-message {
+            background: white; /* Light gray for bot messages */
+            padding: 8px 12px;
+            border-radius: 10px;
+            display: inline-block;
+            max-width: 75%;
+            text-align: left;
+        }
+
+        .chat-message {
+            display: flex;
+            margin-bottom: 10px;
+        }
+
+        .user-container {
+            justify-content: flex-end;
+            display: flex;
+        }
+
+        .bot-container {
+            justify-content: flex-start;
+            display: flex;
+        }
+        .uploaded-file {
+            display: flex;
+            align-items: center;
+            margin-top: 5px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+        }
+
+        .uploaded-file span {
+            flex-grow: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="chat-container">
+            <h2 class="text-center">Academic Advisor Chatbot</h2>
+            <div id="chatbox" class="chatbox"></div>
+            <div class="input-group mt-3">
+                <input type="text" id="user-input" class="form-control" placeholder="Ask a question..." onkeypress="handleKeyPress(event)">
+                <button class="btn btn-primary" onclick="sendMessage()">Send</button>
+                <input type="file" id="file-input" style="display: none;" onchange="handleFileUpload(event)">
+                <button class="btn btn-secondary" onclick="document.getElementById('file-input').click();">
+                    &#128206;
+                </button>
+            </div>
+            <div id="uploaded-files" class="mt-2"></div>
+        </div>
+    </div>
+
+
+    <script>
+        function handleKeyPress(event) {
+            if (event.key === "Enter") {
+                sendMessage();
+            }
+        }
+        let uploadedFiles = []; // Store uploaded files
+
+        function handleFileUpload(event) {
+            let files = event.target.files;
+
+            for (let file of files) {
+                // Check if file is already uploaded
+                if (!uploadedFiles.some(f => f.name === file.name)) {
+                    uploadedFiles.push(file);
+                    displayUploadedFiles();
+                }
+            }
+        }
+
+        function displayUploadedFiles() {
+            let fileListDiv = document.getElementById("uploaded-files");
+            fileListDiv.innerHTML = ""; // Clear existing list
+
+            uploadedFiles.forEach((file, index) => {
+                let fileItem = document.createElement("div");
+                fileItem.classList.add("uploaded-file");
+
+                fileItem.innerHTML = `
+                    <span>${file.name}</span>
+                    <button class="btn btn-sm btn-danger ms-2" onclick="removeFile(${index})">❌</button>
+                `;
+
+                fileListDiv.appendChild(fileItem);
+            });
+        }
+
+        function removeFile(index) {
+            uploadedFiles.splice(index, 1); // Remove file from array
+            displayUploadedFiles(); // Update UI
+        }
+        async function sendMessage() {
+            let userMessage = document.getElementById("user-input").value.trim();
+            if (!userMessage) return;  // Prevent sending empty messages
+
+            document.getElementById("user-input").value = "";
+
+            let chatbox = document.getElementById("chatbox");
+
+            // Display user message (Right side)
+            let userMsgDiv = document.createElement("div");
+            userMsgDiv.classList.add("chat-message", "user-container");
+            userMsgDiv.innerHTML = `<div class="user-message">${userMessage}</div>`;
+            chatbox.appendChild(userMsgDiv);
+
+            chatbox.scrollTop = chatbox.scrollHeight;  // Auto-scroll to bottom
+
+            // Show "Bot is typing..." message
+            let botTyping = document.createElement("div");
+            botTyping.id = "bot-typing";
+            botTyping.classList.add("chat-message", "bot-container");
+            botTyping.innerHTML = `<div class="bot-message">Typing...</div>`;
+            chatbox.appendChild(botTyping);
+
+            let response = await fetch("/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: userMessage })
+            });
+
+            let data = await response.json();
+
+            // Remove "Typing..." message
+            document.getElementById("bot-typing").remove();
+
+            // Display bot response (Left side)
+            let botMsgDiv = document.createElement("div");
+            botMsgDiv.classList.add("chat-message", "bot-container");
+            botMsgDiv.innerHTML = `<div class="bot-message">${data.message}</div>`;
+            chatbox.appendChild(botMsgDiv);
+
+            chatbox.scrollTop = chatbox.scrollHeight;  // Auto-scroll to bottom
+        }
+
+    </script>
+
+</body>
+</html>
