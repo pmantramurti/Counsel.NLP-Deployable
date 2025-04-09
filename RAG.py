@@ -7,7 +7,17 @@ from langchain.schema import Document
 from huggingface_hub import login
 import requests
 import time
+import os
+import zipfile
 
+VECTOR_STORE_ZIP = "vector__store.zip"
+VECTOR_STORE_DIR = "vector__store"
+
+# Unzip only if not already extracted
+if not os.path.exists(VECTOR_STORE_DIR):
+    with zipfile.ZipFile(VECTOR_STORE_ZIP, 'r') as zip_ref:
+        zip_ref.extractall(VECTOR_STORE_DIR)
+        
 login("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")
 
 # LOAD VECTOR STORE
@@ -146,6 +156,21 @@ def generate(state: State):
 
         ### Answer:
         """
+    if state['uploaded_docs'] != None:
+        messages = f"""### System:
+            You are an academic advising assistant. Answer the student's question directly and completely, but do not include extra information beyond what was asked.
+    
+            ### User:
+            Question: {state['question']}
+    
+            ### Context:
+            {docs_content}
+
+            ### User Info:
+            {state['uploaded_docs']}
+            
+            ### Answer:
+        """
     response = llm.invoke(messages)
     return {"answer": response}
 
@@ -155,11 +180,11 @@ graph_builder.add_edge(START, "retrieve")
 graph = graph_builder.compile()
 __all__ = ["get_chatbot_response", "uploaded_docs"]
 
-def get_chatbot_response(user_question):
+def get_chatbot_response(user_question, uploaded_docs = None):
   retries = 3  # Number of retry attempts
   for attempt in range(retries):
     try:
-      response = graph.invoke({"question": user_question})
+      response = graph.invoke({"question": user_question, "uploaded_docs": uploaded_docs})
       return response["answer"].strip()
     except requests.exceptions.HTTPError as e:
       if e.response.status_code == 503:  # Handle server unavailability
