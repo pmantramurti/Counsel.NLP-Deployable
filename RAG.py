@@ -23,8 +23,7 @@ def load_embeddings():
     try:
         return HuggingFaceEmbeddings(
             model_name="sentence-transformers/all-MiniLM-L6-v2",
-            model_kwargs={"device": "cpu"},
-            huggingfacehub_api_token=st.secrets.get("HF_TOKEN")
+            model_kwargs={"device": "cpu"}
         )
     except Exception as e:
         st.error(f"🚨 Error loading embedding model: {e}")
