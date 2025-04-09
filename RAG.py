@@ -153,20 +153,22 @@ graph = graph_builder.compile()
 # === ENTRYPOINT ===
 
 def get_chatbot_response(user_question, uploaded_docs=None):
-    retries = 3
-    for attempt in range(retries):
-        try:
-            response = graph.invoke({
-                "question": user_question,
-                "uploaded_docs": uploaded_docs,
-                "context": [],
-                "answer": ""
-            })
-            return response["answer"].strip()
-        except requests.exceptions.HTTPError as e:
-            if e.response.status_code == 503:
-                print(f"Server unavailable. Retrying ({attempt + 1}/{retries})...")
-                time.sleep(2)
-            else:
-                raise e
-    return "Error: The chatbot service is temporarily unavailable. Please try again later."
+    try:
+        response = graph.invoke({
+            "question": user_question,
+            "uploaded_docs": uploaded_docs,
+            "context": [],
+            "answer": ""
+        })
+        return response["answer"].strip()
+    
+    except HfHubHTTPError as e:
+        if "Model too busy" in str(e):
+            return "The model is currently overloaded. Please try again in a minute."
+        else:
+            print("HuggingFace error:", e)
+            return "A server-side issue occurred. Please try again later."
+    
+    except Exception as e:
+        traceback.print_exc()
+        return "An unexpected error occurred. Please try again."
