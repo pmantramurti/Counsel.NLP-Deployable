@@ -156,7 +156,12 @@ def get_chatbot_response(user_question, uploaded_docs=None):
     retries = 3
     for attempt in range(retries):
         try:
-            response = graph.invoke({"question": user_question, "uploaded_docs": uploaded_docs})
+            response = graph.invoke({
+                "question": user_question,
+                "uploaded_docs": uploaded_docs,
+                "context": [],
+                "answer": ""
+            })
             return response["answer"].strip()
         except requests.exceptions.HTTPError as e:
             if e.response.status_code == 503:
