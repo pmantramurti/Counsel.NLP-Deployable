@@ -20,7 +20,15 @@ def unzip_vector_store(zip_path="vector__store.zip", extract_to="vector__store")
 
 @st.cache_resource
 def load_embeddings():
-    return HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2", model_kwargs={'device': 'cpu'})
+    try:
+        return HuggingFaceEmbeddings(
+            model_name="sentence-transformers/all-MiniLM-L6-v2",
+            model_kwargs={"device": "cpu"},
+            huggingfacehub_api_token=st.secrets.get("HF_TOKEN")
+        )
+    except Exception as e:
+        st.error("🚨 Error loading embedding model: Please check your internet connection or Hugging Face access.")
+        st.stop()
 
 @st.cache_resource
 def load_vector_store():
@@ -30,15 +38,19 @@ def load_vector_store():
 
 @st.cache_resource
 def load_llm():
-    login("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")
-    return HuggingFaceEndpoint(
-        repo_id="meta-llama/Llama-3.2-3B",
-        task="text-generation",
-        max_new_tokens=512,
-        temperature=0.7,
-        do_sample=True,
-        repetition_penalty=1.03
-    )
+    try:
+        login(st.secrets.get("HF_TOKEN", ""))
+        return HuggingFaceEndpoint(
+            repo_id="meta-llama/Llama-3.2-3B",
+            task="text-generation",
+            max_new_tokens=512,
+            temperature=0.7,
+            do_sample=True,
+            repetition_penalty=1.03
+        )
+    except Exception as e:
+        st.error("🚨 Could not load the LLM. Check your token or connectivity.")
+        st.stop()
 
 @st.cache_data
 def load_courses(filepath="courses.txt"):
