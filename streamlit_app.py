@@ -18,7 +18,11 @@ if "uploaded_docs" not in st.session_state:
     st.session_state.uploaded_docs = []
 
 # User input
-user_input = st.text_input("Ask a question...")
+user_input = st.text_input(
+    "Ask a question:",
+    value=st.session_state.get("user_input", ""),
+    key="user_input",
+)
 
 # On send
 if st.button("Send") and user_input:
