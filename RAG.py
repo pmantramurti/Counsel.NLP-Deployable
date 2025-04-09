@@ -10,6 +10,7 @@ from langchain_community.vectorstores import Chroma
 from langchain import hub
 from langgraph.graph import START, StateGraph
 from huggingface_hub import login
+from huggingface_hub.utils import HfHubHTTPError
 
 @st.cache_resource
 def unzip_vector_store(zip_path="vector__store.zip", extract_to="vector__store"):
