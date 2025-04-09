@@ -28,7 +28,7 @@ if st.button("Send") and user_input:
     st.session_state.chat_history.append(("User", user_input))
     st.session_state.chat_history.append(("Advisor", response))
     st.session_state.user_input = ""
-    st.experimental_rerun()
+    st.rerun()
 
 # Upload documents
 uploaded_files = st.file_uploader("Copy and paste your transcript into a file called transcript.txt, and upload it here for questions related to graduation or course recommendations.", type=["txt", "json"], accept_multiple_files=True)
@@ -50,7 +50,7 @@ if st.session_state.uploaded_docs:
         with col2:
             if st.button("❌", key=f"remove_{idx}"):
                 st.session_state.uploaded_docs.pop(idx)
-                st.experimental_rerun()
+                st.rerun()
 
 # Display chat
 if st.session_state.chat_history:
