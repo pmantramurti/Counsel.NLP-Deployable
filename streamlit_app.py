@@ -17,6 +17,15 @@ if "chat_history" not in st.session_state:
 if "uploaded_docs" not in st.session_state:
     st.session_state.uploaded_docs = []
 
+if "user_input" not in st.session_state:
+    st.session_state.user_input = ""
+if "clear_input" not in st.session_state:
+    st.session_state.clear_input = False
+
+if st.session_state.clear_input:
+    st.session_state.user_input = ""
+    st.session_state.clear_input = False
+
 # User input
 user_input = st.text_input(
     "Ask a question:",
@@ -31,7 +40,7 @@ if st.button("Send") and user_input:
 
     st.session_state.chat_history.append(("User", user_input))
     st.session_state.chat_history.append(("Advisor", response))
-    st.text_input("Dummy", key="clear_input", value="", on_change=clear_input)
+    st.session_state.clear_input = True
     st.rerun()
 
 # Upload documents
