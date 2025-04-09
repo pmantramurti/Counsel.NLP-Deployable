@@ -18,7 +18,7 @@ if "uploaded_docs" not in st.session_state:
     st.session_state.uploaded_docs = []
 
 # Upload documents
-uploaded_files = st.file_uploader("📎 Upload course plans or transcripts", type=["txt", "json"], accept_multiple_files=True)
+uploaded_files = st.file_uploader("📎 Copy and paste your transcript into a file called transcript.txt, and upload it here for questions related to graduation or course recommendations.", type=["txt", "json"], accept_multiple_files=True)
 if uploaded_files:
     for file in uploaded_files:
         try:
