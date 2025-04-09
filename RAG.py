@@ -26,9 +26,7 @@ directory = "./vector__store"
 vector_store = Chroma(persist_directory=directory, embedding_function=embeddings)
 vector_store.get()
 
-uploaded_docs = {}
-
-Llama_model = "meta-llama/Llama-3.2-1B-Instruct"
+Llama_model = "meta-llama/Llama-3.2-3B"
 
 llm = HuggingFaceEndpoint(
     repo_id=Llama_model,
