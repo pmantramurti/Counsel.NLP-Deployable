@@ -27,7 +27,7 @@ def load_embeddings():
             huggingfacehub_api_token=st.secrets.get("HF_TOKEN")
         )
     except Exception as e:
-        st.error("🚨 Error loading embedding model: Please check your internet connection or Hugging Face access.")
+        st.error(f"🚨 Error loading embedding model: {e}")
         st.stop()
 
 @st.cache_resource
