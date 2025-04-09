@@ -31,7 +31,7 @@ if st.button("Send") and user_input:
 
     st.session_state.chat_history.append(("User", user_input))
     st.session_state.chat_history.append(("Advisor", response))
-    st.session_state.user_input = ""
+    st.text_input("Dummy", key="clear_input", value="", on_change=clear_input)
     st.rerun()
 
 # Upload documents
