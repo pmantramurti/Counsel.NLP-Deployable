@@ -46,7 +46,7 @@ def load_llm():
             task="text-generation",
             max_new_tokens=256,
             do_sample=False,
-            temperature=0.4,
+            temperature=0,
             repetition_penalty=1.03
         )
     except Exception as e:
@@ -164,11 +164,8 @@ def generate(state: State) -> State:
     return {"answer": response, "source_documents": state["source_documents"]}
 
 
-graph_builder = StateGraph(State)
-graph_builder.add_node("retrieve", retrieve)
-graph_builder.add_node("generate", generate)
-graph_builder.set_entry_point("retrieve")
-graph_builder.add_edge("retrieve", "generate")
+graph_builder = StateGraph(State).add_sequence([retrieve, generate])
+graph_builder.add_edge(START, "retrieve")
 graph = graph_builder.compile()
 
 # === ENTRYPOINT ===
