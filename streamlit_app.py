@@ -8,7 +8,7 @@ st.set_page_config(page_title="Academic Advisor Chatbot", layout="centered")
 
 from RAG import get_chatbot_response
 import sqlite3
-
+print("Setup Complete")
 st.markdown("## Academic Advising Chatbot")
 
 # Initialize session states
