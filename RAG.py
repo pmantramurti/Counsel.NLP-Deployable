@@ -135,6 +135,7 @@ def generate(state: State):
     
     messages = f"""### System:
         You are an academic advising assistant. Answer the student's question directly and completely, but do not include extra information beyond what was asked.
+        If the context is not applicable towards the answer, say that the information is not available.
         
         ### User:
         Question: {state['question']}
