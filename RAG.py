@@ -7,7 +7,7 @@ import time
 from typing_extensions import List, TypedDict
 from langchain.schema import Document
 from langchain_huggingface import HuggingFaceEndpoint, HuggingFaceEmbeddings
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 from langchain import hub
 from langgraph.graph import START, StateGraph
 from huggingface_hub import login
