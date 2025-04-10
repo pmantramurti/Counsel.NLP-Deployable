@@ -120,6 +120,7 @@ class State(TypedDict):
     context: List[Document]
     answer: str
     uploaded_docs: str | None
+    source_documents: List[str]
 
 def retrieve(state: State) -> State:
     filter = classify_question(state["question"])
