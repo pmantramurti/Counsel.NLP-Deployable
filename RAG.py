@@ -120,36 +120,53 @@ class State(TypedDict):
     answer: str
     uploaded_docs: str | None
 
-def retrieve(state: State):
+def retrieve(state: State) -> State:
     filter = classify_question(state["question"])
     retrieved_docs = vector_store.similarity_search(
         state["question"],
-        k=5,
+        k=10,
         filter=filter
     )
-    return {"context": retrieved_docs}
-
-def generate(state: State):
-    docs_content = "\n\n".join(doc.page_content for doc in state["context"])
-    user_docs = f"\n\n### User Info:\n{state['uploaded_docs']}" if state['uploaded_docs'] else ""
+    return {
+        "context": retrieved_docs,
+        "source_documents": [doc.page_content for doc in retrieved_docs]
+    }
+prompt_template = """
+    Answer the question based on the context below.
+    Do not make up information. Be concise and to the point.
     
-    messages = f"""### System:
-        You are an academic advising assistant. Answer the student's question directly and completely, but do not include extra information beyond what was asked.
-        If the context is not applicable towards the answer, say that the information is not available.
-        
-        ### User:
-        Question: {state['question']}
-        
-        ### Context:
-        {docs_content}{user_docs}
-        
-        ### Answer:
-        """
+    Context: {context}
+    
+    User Info:
+    {uploaded_docs}
+    
+    Question: {question}
+    
+    Answer:
+    """
+def generate(state: State) -> State:
+    docs_content = "\n\n".join(doc.page_content for doc in state["context"])
+    uploaded_content = "\n\n".join(doc["content"] for doc in state.get("uploaded_docs", []))
+    messages = prompt_template.format(
+        context=docs_content,
+        uploaded_docs=uploaded_content,
+        question=state["question"]
+    )
     response = llm.invoke(messages)
-    return {"answer": response}
 
-graph_builder = StateGraph(State).add_sequence([retrieve, generate])
-graph_builder.add_edge(START, "retrieve")
+    # Post-processing
+    response = response.replace("\n", " ").replace("  ", " ")
+    response = re.sub(r"\bI don't know\b|\bAdditionally\b|\bIn conclusion\b|\bbased on the context\b", "", response).strip()
+    response = re.sub(r"\t\+|\t", "", response)
+
+    return {"answer": response, "source_documents": state["source_documents"]}
+
+
+graph_builder = StateGraph(State)
+graph_builder.add_node("retrieve", retrieve)
+graph_builder.add_node("generate", generate)
+graph_builder.set_entry_point("retrieve")
+graph_builder.add_edge("retrieve", "generate")
 graph = graph_builder.compile()
 
 # === ENTRYPOINT ===
@@ -158,9 +175,7 @@ def get_chatbot_response(user_question, uploaded_docs=None):
     try:
         response = graph.invoke({
             "question": user_question,
-            "uploaded_docs": uploaded_docs,
-            "context": [],
-            "answer": ""
+            "uploaded_docs": uploaded_docs or []
         })
         return response["answer"].strip()
     
