@@ -1,4 +1,4 @@
-﻿No prerequisites listed
+No prerequisites listed
 No corequisites listed
 KIN 1
 KIN 2A
@@ -5347,3 +5347,4 @@ ZOOL 116
 ZOOL 143
 ZOOL 180
 ZOOL 186
+
