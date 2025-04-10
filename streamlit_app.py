@@ -28,7 +28,7 @@ if st.session_state.clear_input:
 
 if st.session_state.chat_history:
     chat_html = """
-    <div style='height: 300px; overflow-y: scroll; padding: 1em; border: 1px solid #ccc; background-color: #f9f9f9;'>
+    <div style='height: 300px; overflow-y: scroll; padding: 1em; border: 1px solid #ccc; background-color: var(--background-color); color: var(--text-color);'>
     """
 
     for speaker, message in st.session_state.chat_history:
@@ -41,13 +41,15 @@ if st.session_state.chat_history:
 with st.form("chat_form", clear_on_submit=True):
     user_input = st.text_input("Ask a question:", key="user_input", label_visibility="collapsed")
     submitted = st.form_submit_button("Send")
+    st.rerun()
 
 if submitted and user_input:
     uploaded_context = "\n\n".join(doc["content"] for doc in st.session_state.uploaded_docs) if st.session_state.uploaded_docs else None
-    response = get_chatbot_response(user_input, uploaded_docs=uploaded_context)
-
-    st.session_state.chat_history.append(("User", user_input))
-    st.session_state.chat_history.append(("Advisor", response))
+    with st.spinner("Thinking..."):
+        response = get_chatbot_response(user_input, uploaded_docs=uploaded_context)
+    
+        st.session_state.chat_history.append(("User", user_input))
+        st.session_state.chat_history.append(("Advisor", response))
 
 # Upload documents
 uploaded_files = st.file_uploader("Copy and paste your transcript into a file called transcript.txt, and upload it here for questions related to graduation or course recommendations.", type=["txt", "json"], accept_multiple_files=True)
