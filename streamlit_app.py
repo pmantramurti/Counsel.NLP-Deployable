@@ -26,6 +26,9 @@ if st.session_state.clear_input:
     st.session_state.user_input = ""
     st.session_state.clear_input = False
 
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
+
 if st.session_state.chat_history:
     chat_html = """
     <div style='height: 300px; overflow-y: scroll; padding: 1em; border: 1px solid #ccc; background-color: var(--background-color); color: var(--text-color);'>
