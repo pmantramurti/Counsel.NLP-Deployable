@@ -49,6 +49,7 @@ if submitted and user_input:
     
         st.session_state.chat_history.append(("User", user_input))
         st.session_state.chat_history.append(("Advisor", response))
+        st.rerun()
 
 # Upload documents
 uploaded_files = st.file_uploader("Copy and paste your transcript into a file called transcript.txt, and upload it here for questions related to graduation or course recommendations.", type=["txt", "json"], accept_multiple_files=True)
