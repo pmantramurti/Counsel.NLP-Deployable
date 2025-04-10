@@ -1,0 +1,98 @@
+[
+    {
+        "id": "MSCS",
+        "title": "MSCS - Master of Science in Computer Science",
+        "units": "33 units total",
+        "description": "The Master of Science in Computer Science (MSCS) degree provides advanced knowledge in computer science, preparing students for careers in industry, research, and academia. Students will develop expertise in core areas such as algorithms, systems, and machine learning while selecting elective courses to specialize in their areas of interest.",
+        "prerequisite(s)": [
+            "Bachelor’s degree in Computer Science or a related field",
+            "Competency in programming, algorithms, and computer systems recommended"
+        ],
+        "corequisite(s)": [
+            "No corequisites listed"
+        ],
+        "pre/corequisite(s)": [
+            "No pre/corequisites listed"
+        ],
+        "grading": "Letter Graded",
+        "notes": [
+            "Students must complete a minimum of 33 units",
+            "Students must pass the Graduation Writing Assessment Requirement (GWAR) by taking CS 200W",
+            "Students may transfer up to 9 units from SJSU and up to 6 units from outside SJSU"
+        ],
+        "class_structure": "Hybrid (Lecture + Research)",
+        "degree_core_courses": {
+            "foundation": [
+                { "course": "CS 252", "title": "Advanced Programming Language Principles", "units": 3 },
+                { "course": "CS 254", "title": "Theory of Computation", "units": 3 },
+                { "course": "CS 255", "title": "Design and Analysis of Algorithms", "units": 3 },
+                { "course": "CS 262", "title": "Randomized Algorithms and Applications", "units": 3 },
+                { "course": "MATH 279A", "title": "Graph Theory", "units": 3 }
+            ],
+            "architecture": [
+                { "course": "CS 247", "title": "Advanced Computer Architecture", "units": 3 },
+                { "course": "CS 258", "title": "Computer Communication Systems", "units": 3 },
+                { "course": "CS 259", "title": "Advanced Parallel Processing", "units": 3 },
+                { "course": "CS 268", "title": "Topics in Wireless Mobile Networking", "units": 3 }
+            ],
+            "systems_software": [
+                { "course": "CS 218", "title": "Topics in Cloud Computing", "units": 3 },
+                { "course": "CS 249", "title": "Distributed Computing", "units": 3 },
+                { "course": "CS 253", "title": "Advanced Compiler Design", "units": 3 },
+                { "course": "CS 257", "title": "Database System Principles", "units": 3 },
+                { "course": "CS 267", "title": "Topics in Database Systems", "units": 3 }
+            ],
+            "specialty": [
+                { "course": "CS 216", "title": "Physically Based Modeling for Computer Graphics", "units": 3 },
+                { "course": "CS 256", "title": "Topics in Artificial Intelligence", "units": 3 },
+                { "course": "CS 265", "title": "Cryptography and Computer Security", "units": 3 },
+                { "course": "CS 271", "title": "Topics in Machine Learning", "units": 3 },
+                { "course": "CS 272", "title": "Reinforcement Learning and Sequential Decision Making", "units": 3 },
+                { "course": "CS 273", "title": "Topics in Natural Language Processing", "units": 3 },
+                { "course": "CS 276", "title": "Machine Learning on Graphs", "units": 3 }
+            ]
+        },
+        "elective_courses": {
+            "courses": [
+                { "course": "CS 116A", "title": "Introduction to Computer Graphics", "units": 3 },
+                { "course": "CS 123A", "title": "Bioinformatics I", "units": 3 },
+                { "course": "CS 143C", "title": "Numerical Analysis and Scientific Computing", "units": 3 },
+                { "course": "CS 156", "title": "Introduction to Artificial Intelligence", "units": 3 },
+                { "course": "CS 171", "title": "Introduction to Machine Learning", "units": 3 },
+                { "course": "CS 175", "title": "Mobile Device Development", "units": 3 },
+                { "course": "MATH 161A", "title": "Applied Probability and Statistics I", "units": 3 },
+                { "course": "MATH 164", "title": "Mathematical Statistics", "units": 3 },
+                {"course":  "CS 180", "title": "Individual Studies", "units": 1},
+                {"course":  "CS 280", "title": "Graduate Individual Studies", "units": 1}
+            ],
+            "notes": "Any graduate courses listed above not used to satisfy degree requirements may be used as an elective course."
+        },
+        "graduate_writing_requirement": {
+            "course": "CS 200W",
+            "title": "Graduate Technical Writing",
+            "units": 3
+        },
+        "culminating_experience": {
+            "Plan A (Thesis)": [
+                { "course": "CS 297", "title": "Preparation for Writing Project or Thesis", "units": 3 },
+                { "course": "CS 299", "title": "Master’s Thesis", "units": 3 }
+            ],
+            "Plan B (Project)": [
+                { "course": "CS 297", "title": "Preparation for Writing Project or Thesis", "units": 3 },
+                { "course": "CS 298", "title": "Master’s Writing Project", "units": 3 }
+            ],
+            "notes": "Students must complete CS 297 before enrolling in CS 299 (Thesis) or CS 298 (Project). A comprehensive oral examination is required upon completion."
+        },
+        "additional_notes": [
+            "Students must complete all residency, curriculum, unit, GPA, and culminating experience requirements.",
+            "No more than 6 units may be taken from outside the Department of Computer Science.",
+            "Elective courses must be planned in consultation with a CS Graduate Advisor."
+        ],
+        "unit_distribution": {
+            "degree_core_courses": {"foundation": 3, "architecture": 3, "systems_software": 3, "specialty": 9, "Total": 18},
+            "elective_courses": 6,
+            "graduate_writing_requirement": 3,
+            "culminating_experience": 6
+        }
+    }
+]

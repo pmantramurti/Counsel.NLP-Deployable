@@ -1,0 +1,222 @@
+    [
+    {
+        "id": "MSSE",
+        "title": "MSSE - Master of Science in Software Engineering",
+        "units": "33 units total",
+        "description": "Master of Science in Software Engineering (MSSE) program requirements, including core courses, specialization tracks, elective courses, writing requirement, and culminating experience.",
+        "prerequisite(s)": [
+            "Bachelor’s degree in Computer Science, Software Engineering, or a related field",
+            "Competency in programming, software development, and systems engineering recommended"
+        ],
+        "corequisite(s)": [
+            "No corequisites listed"
+        ],
+        "pre/corequisite(s)": [
+            "No pre/corequisites listed"
+        ],
+        "grading": "Letter Graded",
+        "notes": [
+            "Students must complete a minimum of 33 units",
+            "Students must pass the Graduation Writing Assessment Requirement (GWAR)",
+            "Students admitted before Fall 2020 may choose to follow the old or new catalog but must fulfill all requirements of the chosen catalog"
+        ],
+        "class_structure": "Hybrid (Lecture + Project-Based Learning)",
+        "degree_core_courses": [
+            {
+                "course": "CMPE 272",
+                "title": "Enterprise Software Overview",
+                "units": 3
+            },
+            {
+                "course": "CMPE 202",
+                "title": "Software Systems Engineering",
+                "units": 3
+            },
+            {
+                "course": "CMPE 255",
+                "title": "Data Mining",
+                "units": 3
+            }
+        ],
+        "specialization_tracks": {
+            "Enterprise Software Technologies": {
+                "overview": "Prepares students for careers in infrastructure software and enterprise application development.",
+                "required": [
+                    { "course": "CMPE 273", "title": "Enterprise Distributed Systems", "units": 3 },
+                    { "course": "CMPE 275", "title": "Enterprise Application Development", "units": 3 }
+                ],
+                "choice": [
+                    { "course": "CMPE 281", "title": "Cloud Technologies", "units": 3 },
+                    { "course": "CMPE 283", "title": "Virtualization Technologies", "units": 3 },
+                    { "course": "CMPE 285", "title": "Software Engineering Processes", "units": 3 },
+                    { "course": "CMPE 287", "title": "Software Quality Assurance and Testing", "units": 3 },
+                    { "course": "CMPE 206", "title": "Computer Network Design", "units": 3 },
+                    { "course": "CMPE 207", "title": "Network Programming and Applications", "units": 3 },
+                    { "course": "CMPE 257", "title": "Machine Learning", "units": 3 },
+                    { "course": "CMPE 258", "title": "Deep Learning", "units": 3 },
+                    { "course": "CMPE 209", "title": "Network Security", "units": 3 },
+                    { "course": "CMPE 279", "title": "Software Security Technologies", "units": 3 }
+                ]
+            },
+            "Cloud Computing and Virtualization": {
+                "overview": "Focuses on cloud computing and virtualization principles, modeling, design, and deployment.",
+                "required": [
+                    { "course": "CMPE 281", "title": "Cloud Technologies", "units": 3 },
+                    { "course": "CMPE 283", "title": "Virtualization Technologies", "units": 3 }
+                ],
+                "choice": [
+                    { "course": "CMPE 273", "title": "Enterprise Distributed Systems", "units": 3 },
+                    { "course": "CMPE 275", "title": "Enterprise Application Development", "units": 3 },
+                    { "course": "CMPE 285", "title": "Software Engineering Processes", "units": 3 },
+                    { "course": "CMPE 287", "title": "Software Quality Assurance and Testing", "units": 3 },
+                    { "course": "CMPE 206", "title": "Computer Network Design", "units": 3 },
+                    { "course": "CMPE 207", "title": "Network Programming and Applications", "units": 3 },
+                    { "course": "CMPE 257", "title": "Machine Learning", "units": 3 },
+                    { "course": "CMPE 258", "title": "Deep Learning", "units": 3 },
+                    { "course": "CMPE 209", "title": "Network Security", "units": 3 },
+                    { "course": "CMPE 279", "title": "Software Security Technologies", "units": 3 }
+                ]
+            },
+            "Data Science": {
+                "overview": "Covers theoretical and practical data analysis, machine learning, and data visualization.",
+                "required": [
+                    { "course": "CMPE 257", "title": "Machine Learning", "units": 3 },
+                    { "course": "CMPE 258", "title": "Deep Learning", "units": 3 }
+                ],
+                "choice": [
+                    { "course": "CMPE 273", "title": "Enterprise Distributed Systems", "units": 3 },
+                    { "course": "CMPE 275", "title": "Enterprise Application Development", "units": 3 },
+                    { "course": "CMPE 281", "title": "Cloud Technologies", "units": 3 },
+                    { "course": "CMPE 283", "title": "Virtualization Technologies", "units": 3 },
+                    { "course": "CMPE 285", "title": "Software Engineering Processes", "units": 3 },
+                    { "course": "CMPE 287", "title": "Software Quality Assurance and Testing", "units": 3 },
+                    { "course": "CMPE 206", "title": "Computer Network Design", "units": 3 },
+                    { "course": "CMPE 207", "title": "Network Programming and Applications", "units": 3 },
+                    { "course": "CMPE 209", "title": "Network Security", "units": 3 },
+                    { "course": "CMPE 279", "title": "Software Security Technologies", "units": 3 }
+                ]
+            },
+            "Software Systems Engineering": {
+                "overview": "Focuses on cloud computing and virtualization principles, modeling, design, and deployment.",
+                "required": [
+                    { "course": "CMPE 285", "title": "Software Engineering Processes", "units": 3 },
+                    { "course": "CMPE 287", "title": "Software Quality Assurance and Testing", "units": 3 }
+                ],
+                "choice": [
+                    { "course": "CMPE 273", "title": "Enterprise Distributed Systems", "units": 3 },
+                    { "course": "CMPE 275", "title": "Enterprise Application Development", "units": 3 },
+                    { "course": "CMPE 281", "title": "Cloud Technologies", "units": 3 },
+                    { "course": "CMPE 283", "title": "Virtualization Technologies", "units": 3 },
+                    { "course": "CMPE 206", "title": "Computer Network Design", "units": 3 },
+                    { "course": "CMPE 207", "title": "Network Programming and Applications", "units": 3 },
+                    { "course": "CMPE 257", "title": "Machine Learning", "units": 3 },
+                    { "course": "CMPE 258", "title": "Deep Learning", "units": 3 },
+                    { "course": "CMPE 209", "title": "Network Security", "units": 3 },
+                    { "course": "CMPE 219", "title": "Cybersecurity Clinics with HCI", "units": 3 },
+                    { "course": "CMPE 279", "title": "Software Security Technologies", "units": 3 }
+                ]
+            },
+            "Networking Software": {
+                "overview": "Focuses on cloud computing and virtualization principles, modeling, design, and deployment.",
+                "required": [
+                    { "course": "CMPE 206", "title": "Computer Network Design", "units": 3 },
+                    { "course": "CMPE 207", "title": "Network Programming and Applications", "units": 3 }
+                ],
+                "choice": [
+                    { "course": "CMPE 273", "title": "Enterprise Distributed Systems", "units": 3 },
+                    { "course": "CMPE 275", "title": "Enterprise Application Development", "units": 3 },
+                    { "course": "CMPE 281", "title": "Cloud Technologies", "units": 3 },
+                    { "course": "CMPE 283", "title": "Virtualization Technologies", "units": 3 },
+                    { "course": "CMPE 285", "title": "Software Engineering Processes", "units": 3 },
+                    { "course": "CMPE 287", "title": "Software Quality Assurance and Testing", "units": 3 },
+                    { "course": "CMPE 257", "title": "Machine Learning", "units": 3 },
+                    { "course": "CMPE 258", "title": "Deep Learning", "units": 3 },
+                    { "course": "CMPE 209", "title": "Network Security", "units": 3 },
+                    { "course": "CMPE 219", "title": "Cybersecurity Clinics with HCI", "units": 3 },
+                    { "course": "CMPE 279", "title": "Software Security Technologies", "units": 3 }
+                ]
+            },
+            "Cybersecurity": {
+                "overview": "Focuses on secure system design, deployment, and operational risk management.",
+                "required": [
+                    { "course": "CMPE 209", "title": "Network Security", "units": 3 },
+                    { "course": "CMPE 219", "title": "Cybersecurity Clinics with HCI", "units": 3 },
+                    { "course": "CMPE 279", "title": "Software Security Technologies", "units": 3 }
+                ],
+                "choice": [
+                    { "course": "CMPE 273", "title": "Enterprise Distributed Systems", "units": 3 },
+                    { "course": "CMPE 275", "title": "Enterprise Application Development", "units": 3 },
+                    { "course": "CMPE 281", "title": "Cloud Technologies", "units": 3 },
+                    { "course": "CMPE 283", "title": "Virtualization Technologies", "units": 3 },
+                    { "course": "CMPE 285", "title": "Software Engineering Processes", "units": 3 },
+                    { "course": "CMPE 287", "title": "Software Quality Assurance and Testing", "units": 3 },
+                    { "course": "CMPE 206", "title": "Computer Network Design", "units": 3 },
+                    { "course": "CMPE 207", "title": "Network Programming and Applications", "units": 3 },
+                    { "course": "CMPE 257", "title": "Machine Learning", "units": 3 },
+                    { "course": "CMPE 258", "title": "Deep Learning", "units": 3 }
+                ]
+            }
+        },
+        "elective_courses": {
+            "restricted": [
+                "CMPE 270", "CMPE 271", "CMPE 294", "CMPE 298", "CMPE 298I", "CMPE 295A", "CMPE 295B", "CMPE 299A", "CMPE 299B"
+            ]
+        },
+        "graduate_writing_requirement": {
+            "options": [
+                {
+                    "course": "CMPE 294",
+                    "title": "Computer Engineering Seminar",
+                    "units": 3
+                },
+                {
+                    "course": "ENGR 200W",
+                    "title": "Engineering Reports",
+                    "units": 3
+                }
+            ]
+        },
+        "culminating_experience": {
+            "Masters Project": [
+                {
+                    "course": "CMPE 295A",
+                    "title": "Master's Project I",
+                    "units": 3,
+                    "description": "Initial phase of the master's project, including research, design, and development planning."
+                },
+                {
+                    "course": "CMPE 295B",
+                    "title": "Master's Project II",
+                    "units": 3,
+                    "description": "Final implementation, testing, and presentation of the master's project."
+                }
+            ],
+            "Masters Thesis": [
+                {
+                    "course": "CMPE 299A",
+                    "title": "Master's Thesis I",
+                    "units": 3,
+                    "description": "Research and proposal development for the master's thesis in software engineering."
+                },
+                {
+                    "course": "CMPE 299B",
+                    "title": "Master's Thesis II",
+                    "units": 3,
+                    "description": "Completion and defense of the master's thesis research."
+                }
+            ]
+        },
+        "additional_notes": [
+            "Degree core and specialization core courses must be completed before starting the culminating experience.",
+            "CMPE 294 or ENGR 200W must be completed before or concurrently with CMPE 295A or CMPE 299A.",
+            "Only one of the specialization choice courses or CMPE 294/ENGR 200W can be taken concurrently with CMPE 295A."
+        ],
+        "unit_distribution": {
+            "degree_core_courses": 9,
+            "specialization_tracks": {"Required": 6, "Choice": 3, "Total":  9},
+            "elective_courses": 6,
+            "graduate_writing_requirement": 3,
+            "culminating_experience": 6
+        }
+    }
+]

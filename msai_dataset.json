@@ -1,0 +1,94 @@
+[
+    {
+        "id": "MSAI",
+        "title": "MSAI - Master of Science in Artificial Intelligence",
+        "units": "33 units total",
+        "description": "Master of Science in Artificial Intelligence (MSAI) program requirements, including core courses, specialization tracks, elective courses, writing requirement, and culminating experience.",
+        "prerequisite(s)": [
+            "Bachelor’s degree in Computer Science, Software Engineering, or a related field",
+            "Background in programming, mathematics, and machine learning recommended"
+        ],
+        "corequisite(s)": [
+            "No corequisites listed"
+        ],
+        "pre/corequisite(s)": [
+            "No pre/corequisites listed"
+        ],
+        "grading": "Letter Graded",
+        "notes": [
+            "Students must complete a minimum of 33 units",
+            "Students must pass the Graduation Writing Assessment Requirement (GWAR)"
+        ],
+        "class_structure": "Hybrid (Lecture + Research)",
+        "degree_core_courses": [
+            {
+                "course": "CMPE 252",
+                "title": "Artificial Intelligence and Data Engineering",
+                "units": 3
+            },
+            {
+                "course": "CMPE 257",
+                "title": "Machine Learning",
+                "units": 3
+            },
+            {
+                "course": "ISE 201",
+                "title": "Math Foundations for Decision and Data Sciences",
+                "units": 3
+            }
+        ],
+        "specialization_tracks": {
+            "Data Science": [
+                { "course": "CMPE 255", "title": "Data Mining", "units": 3 },
+                { "course": "CMPE 256", "title": "Advanced Data Mining", "units": 3 },
+                { "course": "CMPE 259", "title": "Natural Language Processing", "units": 3 }
+            ],
+            "Autonomous Systems": [
+                { "course": "CMPE 249", "title": "Intelligent Autonomous Systems", "units": 3 },
+                { "course": "CMPE 258", "title": "Deep Learning", "units": 3 },
+                { "course": "CMPE 260", "title": "Reinforcement Learning", "units": 3 }
+            ]
+        },
+        "elective_courses": {
+            "Area A": [
+                { "course": "CMPE 249", "title": "Intelligent Autonomous Systems", "units": 3 },
+                { "course": "CMPE 255", "title": "Data Mining", "units": 3 },
+                { "course": "CMPE 256", "title": "Advanced Data Mining", "units": 3 },
+                { "course": "CMPE 258", "title": "Deep Learning", "units": 3 },
+                { "course": "CMPE 259", "title": "Natural Language Processing", "units": 3 },
+                { "course": "CMPE 260", "title": "Reinforcement Learning", "units": 3 }
+            ],
+            "Area B": [
+                { "course": "CMPE 214", "title": "GPU Architecture and Programming", "units": 3 },
+                { "course": "CMPE 217", "title": "Human Computer Interaction", "units": 3 },
+                { "course": "CMPE 243", "title": "Embedded Systems Applications", "units": 3 },
+                { "course": "CMPE 266", "title": "Big Data Engineering and Analytics", "units": 3 },
+                { "course": "CMPE 281", "title": "Cloud Technologies", "units": 3 },
+                { "course": "CMPE 297", "title": "Special Topics in Computer/Software Engineering", "units": 3 },
+                { "course": "CMPE 298", "title": "Special Problems", "units": 3 }
+            ]
+        },
+        "graduate_writing_requirement": {
+            "course": "CMPE 294",
+            "title": "Computer Engineering Seminar",
+            "units": 3
+        },
+        "culminating_experience": {
+            "Masters Thesis": [
+                { "course": "CMPE 299A", "title": "Master's Thesis I", "units": 3 },
+                { "course": "CMPE 299B", "title": "Master's Thesis II", "units": 3 }
+            ],
+            "Masters Project": [
+                { "course": "CMPE 295A", "title": "Master's Project I", "units": 3 },
+                { "course": "CMPE 295B", "title": "Master's Project II", "units": 3 }
+            ]
+        },
+        "unit_distribution": {
+            "degree_core_courses": 9,
+            "specialization_tracks": 6,
+            "elective_courses": {"Area A":  [3,9], "Area B": [0,6], "Total": 9},
+            "graduate_writing_requirement": 3,
+            "culminating_experience": 6
+        }
+    }
+]
