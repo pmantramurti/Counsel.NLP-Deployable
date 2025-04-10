@@ -26,22 +26,30 @@ if st.session_state.clear_input:
     st.session_state.user_input = ""
     st.session_state.clear_input = False
 
-# User input
-user_input = st.text_input(
-    "Ask a question:",
-    value=st.session_state.get("user_input", ""),
-    key="user_input",
-)
+if st.session_state.chat_history:
+    st.markdown("---")
+    st.markdown(
+        """
+        <div style='height: 300px; overflow-y: scroll; padding: 1em; border: 1px solid #ccc; background-color: #f9f9f9'>
+        """,
+        unsafe_allow_html=True
+    )
 
-# On send
-if st.button("Send") and user_input:
+    for speaker, message in st.session_state.chat_history:
+        st.markdown(f"**{speaker}:** {message}")
+
+    st.markdown("</div>", unsafe_allow_html=True)
+
+with st.form("chat_form", clear_on_submit=True):
+    user_input = st.text_input("Ask a question:", key="user_input", label_visibility="collapsed")
+    submitted = st.form_submit_button("Send")
+
+if submitted and user_input:
     uploaded_context = "\n\n".join(doc["content"] for doc in st.session_state.uploaded_docs) if st.session_state.uploaded_docs else None
     response = get_chatbot_response(user_input, uploaded_docs=uploaded_context)
 
     st.session_state.chat_history.append(("User", user_input))
     st.session_state.chat_history.append(("Advisor", response))
-    st.session_state.clear_input = True
-    st.rerun()
 
 # Upload documents
 uploaded_files = st.file_uploader("Copy and paste your transcript into a file called transcript.txt, and upload it here for questions related to graduation or course recommendations.", type=["txt", "json"], accept_multiple_files=True)
@@ -51,7 +59,7 @@ if uploaded_files:
             content = file.read().decode("utf-8")
             st.session_state.uploaded_docs.append({"name": file.name, "content": content})
         except Exception as e:
-            st.error(f"❌ Failed to read {file.name}: {e}")
+            st.error(f"Failed to read {file.name}: {e}")
 
 # Display uploaded files with remove button
 if st.session_state.uploaded_docs:
@@ -64,9 +72,3 @@ if st.session_state.uploaded_docs:
             if st.button("❌", key=f"remove_{idx}"):
                 st.session_state.uploaded_docs.pop(idx)
                 st.rerun()
-
-# Display chat
-if st.session_state.chat_history:
-    st.markdown("---")
-    for speaker, message in st.session_state.chat_history:
-        st.markdown(f"**{speaker}:** {message}")
