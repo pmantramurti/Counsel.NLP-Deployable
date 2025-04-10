@@ -168,7 +168,7 @@ def get_chatbot_response(user_question, uploaded_docs=None):
             return "The model is currently overloaded. Please try again in a minute."
         else:
             print("HuggingFace error:", e)
-            return "A server-side issue occurred. Please try again later."
+            return f"A server-side issue occurred. Error : {e}"
     
     except Exception as e:
         traceback.print_exc()
