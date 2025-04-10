@@ -27,20 +27,16 @@ if st.session_state.clear_input:
     st.session_state.clear_input = False
 
 if st.session_state.chat_history:
-    with st.container():
-        st.markdown("---")
-        st.markdown(
-            """
-            <div style='height: 300px; overflow-y: scroll; padding: 1em; border: 1px solid #ccc; background-color: #f9f9f9' id='chat-box'>
-            """,
-            unsafe_allow_html=True
-        )
+    chat_html = """
+    <div style='height: 300px; overflow-y: scroll; padding: 1em; border: 1px solid #ccc; background-color: #f9f9f9;'>
+    """
 
-        # Render messages as raw markdown into the same container
-        for speaker, message in st.session_state.chat_history:
-            st.markdown(f"**{speaker}:** {message}", unsafe_allow_html=True)
+    for speaker, message in st.session_state.chat_history:
+        chat_html += f"<p><strong>{speaker}:</strong> {message}</p>"
 
-        st.markdown("</div>", unsafe_allow_html=True)
+    chat_html += "</div>"
+
+    st.markdown(chat_html, unsafe_allow_html=True)
 
 with st.form("chat_form", clear_on_submit=True):
     user_input = st.text_input("Ask a question:", key="user_input", label_visibility="collapsed")
