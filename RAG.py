@@ -41,11 +41,11 @@ def load_llm():
     try:
         login(st.secrets.get("HF_TOKEN", ""))
         return HuggingFaceEndpoint(
-            repo_id="meta-llama/Llama-3.2-3B",
+            repo_id="meta-llama/Llama-3.2-3B-Instruct",
             task="text-generation",
-            max_new_tokens=512,
-            temperature=0.7,
-            do_sample=True,
+            max_new_tokens=256,
+            do_sample=False,
+            temperature=0.4,
             repetition_penalty=1.03
         )
     except Exception as e:
