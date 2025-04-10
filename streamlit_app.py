@@ -41,7 +41,6 @@ if st.session_state.chat_history:
 with st.form("chat_form", clear_on_submit=True):
     user_input = st.text_input("Ask a question:", key="user_input", label_visibility="collapsed")
     submitted = st.form_submit_button("Send")
-    st.rerun()
 
 if submitted and user_input:
     uploaded_context = "\n\n".join(doc["content"] for doc in st.session_state.uploaded_docs) if st.session_state.uploaded_docs else None
