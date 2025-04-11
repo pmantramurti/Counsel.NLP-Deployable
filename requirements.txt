@@ -1,7 +1,8 @@
 streamlit
 pandas
 langchain
-langchain_chroma
+langchain-huggingface
+langchain-chroma
 transformers
 requests
 langgraph
@@ -10,4 +11,4 @@ huggingface-hub
 nltk
 Flask
 pysqlite3-binary
-huggingface_hub[hf_xet]
+huggingface-hub[hf_xet]
