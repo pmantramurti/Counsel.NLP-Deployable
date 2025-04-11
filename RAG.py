@@ -157,6 +157,7 @@ class State(TypedDict):
     answer: str
     uploaded_docs: str | None
     source_documents: List[str]
+    chat_history: List[str]
 
 def retrieve(state: State) -> State:
     filter = classify_question(state["question"])
@@ -177,18 +178,23 @@ prompt_template = """
     
     User Info:
     {uploaded_docs}
+
+    Dialogue thus far:
+    {chat_history}
     
     Question: {question}
-    
+
     Answer:
     """
 def generate(state: State) -> State:
     docs_content = "\n\n".join(doc.page_content for doc in state["context"])
     uploaded_content = "\n\n".join(doc["content"] for doc in state.get("uploaded_docs", []))
+    chat_history = "\n".join(f"{speaker},{content}" for speaker, content in state.get("chat_history", []))
     messages = prompt_template.format(
         context=docs_content,
         uploaded_docs=uploaded_content,
-        question=state["question"]
+        question=state["question"],
+        chat_history = chat_history
     )
     response = llm.invoke(messages)
 
@@ -206,11 +212,12 @@ graph = graph_builder.compile()
 
 # === ENTRYPOINT ===
 
-def get_chatbot_response(user_question, uploaded_docs=None):
+def get_chatbot_response(user_question, uploaded_docs=None, chat_history=None):
     try:
         response = graph.invoke({
             "question": user_question,
-            "uploaded_docs": uploaded_docs or []
+            "uploaded_docs": uploaded_docs or [],
+            "chat_history": chat_history or []
         })
         return response["answer"].strip()
     
