@@ -64,54 +64,90 @@ llm = load_llm()
 courses = load_courses()
 
 
-def classify_question(question: str):
-    if "between" in question:
-        filters = [{"class_name": {"$eq": c}} for c in courses if c in question]
-        return {"$or": filters} if filters else None
-    elif "require" in question or "have" in question:
-        if "corequisite" in question and "prerequisite" in question:
-            coreq_pos = question.find("corequisite")
-            prereq_pos = question.find("prerequisite")
-            filters = []
-            i = j = 1
-            if coreq_pos < prereq_pos:
-                sec_1 = question[:coreq_pos]
-                sec_2 = question[coreq_pos:]
-                for c in courses:
-                    if c in sec_1:
-                        filters.append({f"coreq_{i}": {"$eq": c}})
-                        i += 1
-                    if c in sec_2:
-                        filters.append({f"prereq_{j}": {"$eq": c}})
-                        j += 1
-            else:
-                sec_1 = question[:prereq_pos]
-                sec_2 = question[prereq_pos:]
-                for c in courses:
-                    if c in sec_1:
-                        filters.append({f"prereq_{i}": {"$eq": c}})
-                        i += 1
-                    if c in sec_2:
-                        filters.append({f"coreq_{j}": {"$eq": c}})
-                        j += 1
-            return {"$and": filters} if "and" in question else {"$or": filters} if filters else None
+def normalize(text: str) -> str:
+    return re.sub(r"\s+", " ", text.lower().replace("-", " ")).strip()
 
-        elif "prerequisite" in question:
-            filters = [{f"prereq_{i}": {"$eq": c}} for i, c in enumerate(courses, 1) if c in question]
-            return filters[0] if len(filters) == 1 else {"$and": filters} if "and" in question else {"$or": filters} if filters else None
-        else:
-            filters = [{f"coreq_{i}": {"$eq": c}} for i, c in enumerate(courses, 1) if c in question]
-            return filters[0] if len(filters) == 1 else {"$and": filters} if "and" in question else {"$or": filters} if filters else None
-    elif "need" in question:
-        last_course = ""
+def classify_question(question: str):
+    normalized_question = normalize(question)
+    filters = []
+
+    def match_courses(section: str):
+        matched = []
+        section = normalize(section)
         for c in courses:
-            if c in question and question.find(last_course) < question.find(c):
+            if normalize(c) in section:
+                matched.append(c)
+        return matched
+
+    if "between" in normalized_question:
+        for c in match_courses(normalized_question):
+            filters.append({"class_name": {"$eq": c}})
+        return {"$or": filters} if len(filters) != 0 else None
+
+    elif "require" in normalized_question or "have" in normalized_question:
+        if "corequisite" in normalized_question and "prerequisite" in normalized_question:
+            coreq_pos = normalized_question.find("corequisite")
+            prereq_pos = normalized_question.find("prerequisite")
+            filters = []
+            i, j = 1, 1
+            if coreq_pos < prereq_pos:
+                sec_1 = normalized_question[:coreq_pos]
+                sec_2 = normalized_question[coreq_pos:]
+                for c in match_courses(sec_1):
+                    filters.append({f"coreq_{i}": {"$eq": c}})
+                    i += 1
+                for c in match_courses(sec_2):
+                    filters.append({f"prereq_{j}": {"$eq": c}})
+                    j += 1
+            else:
+                sec_1 = normalized_question[:prereq_pos]
+                sec_2 = normalized_question[prereq_pos:]
+                for c in match_courses(sec_1):
+                    filters.append({f"prereq_{i}": {"$eq": c}})
+                    i += 1
+                for c in match_courses(sec_2):
+                    filters.append({f"coreq_{j}": {"$eq": c}})
+                    j += 1
+            filter = {"$and": filters} if "and" in normalized_question else {"$or": filters}
+            if len(filters) < 2:
+                filter = filters
+            return filter[0] if len(filters) != 0 else None
+
+        elif "prerequisite" in normalized_question:
+            i = 1
+            for c in match_courses(normalized_question):
+                filters.append({f"prereq_{i}": {"$eq": c}})
+                i += 1
+            filter = {"$and": filters} if "and" in normalized_question else {"$or": filters}
+            if len(filters) < 2:
+                filter = filters
+            return filter[0] if len(filters) != 0 else None
+
+        else:
+            i = 1
+            for c in match_courses(normalized_question):
+                filters.append({f"coreq_{i}": {"$eq": c}})
+                i += 1
+            filter = {"$and": filters} if "and" in normalized_question else {"$or": filters}
+            if len(filters) < 2:
+                filter = filters
+            return filter[0] if len(filters) != 0 else None
+
+    elif "need" in normalized_question:
+        last_course = ""
+        last_pos = -1
+        for c in courses:
+            pos = normalized_question.find(normalize(c))
+            if pos > last_pos:
+                last_pos = pos
                 last_course = c
         return {"class_name": last_course} if last_course else None
+
     else:
         for c in courses:
-            if c in question:
+            if normalize(c) in normalized_question:
                 return {"class_name": c}
+
     return None
 
 
