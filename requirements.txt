@@ -1,6 +1,7 @@
 streamlit
 pandas
 langchain[chromadb,huggingface]
+langchain_chroma
 transformers
 requests
 langgraph
