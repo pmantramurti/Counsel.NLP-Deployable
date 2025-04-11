@@ -1,4 +1,5 @@
 import os
+os.environ["TORCH_DISABLE_SOURCE_WATCHER"] = "none"
 print("Starting")
 __import__('pysqlite3')
 import sys
