@@ -10,3 +10,4 @@ huggingface-hub
 nltk
 Flask
 pysqlite3-binary
+huggingface_hub[hf_xet]
