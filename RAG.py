@@ -33,14 +33,18 @@ def load_embeddings():
 
 @st.cache_resource
 def load_vector_store():
+    print("Loading Embeddings")
     embeddings = load_embeddings()
+    print("Unzipping vector store")
     directory = unzip_vector_store()
     return Chroma(persist_directory=directory, embedding_function=embeddings)
 
 @st.cache_resource
 def load_llm():
     try:
+        print("Logging in")
         login(st.secrets.get("HF_TOKEN", ""))
+        print("Loading model pipeline")
         return HuggingFaceEndpoint(
             repo_id="meta-llama/Llama-3.2-3B-Instruct",
             task="text-generation",
@@ -60,7 +64,9 @@ def load_courses(filepath="courses.txt"):
 
 
 vector_store = load_vector_store()
+print("vector store loaded")
 llm = load_llm()
+print("model loaded")
 courses = load_courses()
 
 
