@@ -48,8 +48,7 @@ def load_llm():
             max_new_tokens=256,
             do_sample=False,
             temperature=0,
-            repetition_penalty=1.03,
-            model_kwargs={"timeout": 60}
+            repetition_penalty=1.03
         )
     except Exception as e:
         st.error("🚨 Could not load the LLM. Check your token or connectivity.")
