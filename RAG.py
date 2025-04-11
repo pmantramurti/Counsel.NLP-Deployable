@@ -40,7 +40,7 @@ def load_vector_store():
 @st.cache_resource
 def load_llm():
     try:
-        login(st.secrets.get("HF_TOKEN", ""))
+        login(st.secrets["HF_TOKEN"])
         return HuggingFaceEndpoint(
             repo_id="meta-llama/Llama-3.2-3B-Instruct",
             task="text-generation",
