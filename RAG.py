@@ -2,7 +2,7 @@ import os
 import re
 import zipfile
 import streamlit as st
-from typing_extensions import List, TypedDic
+from typing_extensions import List, TypedDict
 from langchain.schema import Document
 from langchain_huggingface import HuggingFaceEndpoint, HuggingFaceEmbeddings
 from langchain_chroma import Chroma
