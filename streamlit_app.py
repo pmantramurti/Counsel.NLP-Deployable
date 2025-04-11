@@ -48,7 +48,7 @@ with st.form("chat_form", clear_on_submit=True):
 if submitted and user_input:
     uploaded_context = "\n\n".join(doc["content"] for doc in st.session_state.uploaded_docs) if st.session_state.uploaded_docs else None
     with st.spinner("Thinking..."):
-        response = get_chatbot_response(user_input, uploaded_docs=uploaded_context)
+        response = get_chatbot_response(user_input, uploaded_docs=st.session_state.uploaded_docs, chat_history = st.session_state.chat_history)
     
         st.session_state.chat_history.append(("User", user_input))
         st.session_state.chat_history.append(("Advisor", response))
