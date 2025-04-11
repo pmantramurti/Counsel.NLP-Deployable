@@ -6,7 +6,7 @@ import streamlit as st
 
 st.set_page_config(page_title="Academic Advisor Chatbot", layout="centered")
 
-from RAG import get_chatbot_response
+import RAG
 import sqlite3
 print("Setup Complete")
 st.markdown("## Academic Advising Chatbot")
@@ -68,7 +68,7 @@ if (
     with st.spinner("Advisor is typing..."):
         user_message = st.session_state.chat_history[-1][1]
         history_without_last = st.session_state.chat_history[:-1]  # Optional context
-        response = get_chatbot_response(user_message, st.session_state.uploaded_docs, history_without_last)
+        response = RAG.get_chatbot_response(user_message, st.session_state.uploaded_docs, history_without_last)
         st.session_state.chat_history.append(("Advisor", response))
         st.rerun()
 
