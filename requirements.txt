@@ -1,6 +1,6 @@
 streamlit
 pandas
-langchain[chromadb,huggingface]
+langchain
 langchain_chroma
 transformers
 requests
