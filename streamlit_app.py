@@ -1,16 +1,17 @@
-print("Starting")
+import os
+os.write("Starting")
 __import__('pysqlite3')
 import sys
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
-print("Importing streamlit")
+os.write("Importing streamlit")
 import streamlit as st
-print("Streamlit imported")
+os.write("Streamlit imported")
 st.set_page_config(page_title="Academic Advisor Chatbot", layout="centered")
-print("Importing RAG.py")
+os.write("Importing RAG.py")
 import RAG
-print("RAG.py imported")
+os.write("RAG.py imported")
 import sqlite3
-print("Setup Complete")
+os.write("Setup Complete")
 st.markdown("## Academic Advising Chatbot")
 
 # Initialize session states
