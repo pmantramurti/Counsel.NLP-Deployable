@@ -45,7 +45,7 @@ if user_input and user_input.strip():
 
     with st.spinner("Advisor is typing..."):
         history_without_last = st.session_state.chat_history[:-1]  # Optional context
-        response = RAG.get_chatbot_response(user_message, st.session_state.uploaded_docs, history_without_last)
+        response = get_chatbot_response(user_message, st.session_state.uploaded_docs, history_without_last)
         st.session_state.chat_history.append(("Advisor", response))
     st.rerun()
 
