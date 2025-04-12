@@ -1,7 +1,9 @@
 import os
 import re
+import traceback
 import zipfile
 import streamlit as st
+import numpy as np
 from typing_extensions import List, TypedDict
 from langchain.schema import Document
 from langchain_huggingface import HuggingFaceEndpoint, HuggingFaceEmbeddings
@@ -10,12 +12,15 @@ from langgraph.graph import START, StateGraph
 from huggingface_hub import login
 from huggingface_hub.utils import HfHubHTTPError
 
+NUM_DOCS = 10
+MEMORY_LENGTH = 5
 @st.cache_resource
 def unzip_vector_store(zip_path="vector__store.zip", extract_to="vector__store"):
     if not os.path.exists(extract_to):
         with zipfile.ZipFile(zip_path, 'r') as zip_ref:
             zip_ref.extractall(extract_to)
     return extract_to
+
 
 @st.cache_resource
 def load_embeddings():
@@ -28,6 +33,7 @@ def load_embeddings():
         st.error(f"🚨 Error loading embedding model: {e}")
         st.stop()
 
+
 @st.cache_resource
 def load_vector_store():
     print("Loading Embeddings")
@@ -35,6 +41,7 @@ def load_vector_store():
     print("Unzipping vector store")
     directory = unzip_vector_store()
     return Chroma(persist_directory=directory, embedding_function=embeddings)
+
 
 @st.cache_resource
 def load_llm():
@@ -47,12 +54,13 @@ def load_llm():
             task="text-generation",
             max_new_tokens=256,
             do_sample=False,
-            temperature=0,
+            temperature=0.4,
             repetition_penalty=1.03
         )
     except Exception as e:
         st.error("🚨 Could not load the LLM. Check your token or connectivity.")
         st.stop()
+
 
 @st.cache_data
 def load_courses(filepath="courses.txt"):
@@ -69,6 +77,7 @@ courses = load_courses()
 
 def normalize(text: str) -> str:
     return re.sub(r"\s+", " ", text.lower().replace("-", " ")).strip()
+
 
 def classify_question(question: str):
     normalized_question = normalize(question)
@@ -166,44 +175,61 @@ def retrieve(state: State) -> State:
     filter = classify_question(state["question"])
     retrieved_docs = vector_store.similarity_search(
         state["question"],
-        k=10,
+        k=NUM_DOCS,
         filter=filter
     )
     return {
         "context": retrieved_docs,
         "source_documents": [doc.page_content for doc in retrieved_docs]
     }
+
+
 prompt_template = """
     Answer the question based on the context below.
     Do not make up information. Be concise and to the point.
-    
-    Context: {context}
-    
+
+    Context: {prior_context}{context}
+
     User Info:
     {uploaded_docs}
 
     Dialogue thus far:
     {chat_history}
-    
+
     Question: {question}
 
     Answer:
     """
+if "all_documents" not in st.session_state:
+    st.session_state.all_documents = []
+if "docs_saved" not in st.session_state:
+    st.session_state.docs_saved = []
 def generate(state: State) -> State:
     docs_content = "\n\n".join(doc.page_content for doc in state["context"])
+    prior_docs_count = int(np.sum(st.session_state.docs_saved[-MEMORY_LENGTH:]))
+    prior_content = "\n\n".join(
+        doc for doc in st.session_state.all_documents[-prior_docs_count:]
+    )
     uploaded_content = "\n\n".join(doc["content"] for doc in state.get("uploaded_docs", []))
-    chat_history = "\n".join(f"{speaker},{content}" for speaker, content in state.get("chat_history", []))
+    chat_history = "\n".join(f"{speaker},{content}" for speaker, content in state.get("chat_history", [])[-(MEMORY_LENGTH*2):])
     messages = prompt_template.format(
         context=docs_content,
+        prior_context=prior_content,
         uploaded_docs=uploaded_content,
         question=state["question"],
-        chat_history = chat_history
+        chat_history=chat_history
     )
     response = llm.invoke(messages)
-
+    num_docs = 0
+    for doc in state["context"]:
+        if doc.page_content not in st.session_state.all_documents:
+            num_docs += 1
+            st.session_state.all_documents.append(doc.page_content)
+    st.session_state.docs_saved.append(num_docs)
     # Post-processing
     response = response.replace("\n", " ").replace("  ", " ")
-    response = re.sub(r"\bI don't know\b|\bAdditionally\b|\bIn conclusion\b|\bbased on the context\b", "", response).strip()
+    response = re.sub(r"\bI don't know\b|\bAdditionally\b|\bIn conclusion\b|\bbased on the context\b", "",
+                      response).strip()
     response = re.sub(r"\t\+|\t", "", response)
 
     return {"answer": response, "source_documents": state["source_documents"]}
@@ -212,6 +238,7 @@ def generate(state: State) -> State:
 graph_builder = StateGraph(State).add_sequence([retrieve, generate])
 graph_builder.add_edge(START, "retrieve")
 graph = graph_builder.compile()
+
 
 # === ENTRYPOINT ===
 
@@ -223,14 +250,14 @@ def get_chatbot_response(user_question, uploaded_docs=None, chat_history=None):
             "chat_history": chat_history or []
         })
         return response["answer"].strip()
-    
+
     except HfHubHTTPError as e:
         if "Model too busy" in str(e):
             return "The model is currently overloaded. Please try again in a minute."
         else:
             print("HuggingFace error:", e)
             return f"A server-side issue occurred. Error : {e}"
-    
+
     except Exception as e:
         traceback.print_exc()
         return "An unexpected error occurred. Please try again."

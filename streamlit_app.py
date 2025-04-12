@@ -1,9 +1,9 @@
-import os
-os.environ["TORCH_DISABLE_SOURCE_WATCHER"] = "none"
+#import os
+#os.environ["TORCH_DISABLE_SOURCE_WATCHER"] = "none"
 print("Starting")
-__import__('pysqlite3')
-import sys
-sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+#__import__('pysqlite3')
+#import sys
+#sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 print("Importing streamlit")
 import streamlit as st
 print("Streamlit imported")
@@ -23,16 +23,10 @@ if "uploaded_docs" not in st.session_state:
 
 if "user_input" not in st.session_state:
     st.session_state.user_input = ""
-if "clear_input" not in st.session_state:
-    st.session_state.clear_input = False
-
-if st.session_state.clear_input:
-    st.session_state.user_input = ""
-    st.session_state.clear_input = False
 
 if st.session_state.chat_history:
     chat_html = """
-    <div style='height: 300px; overflow-y: scroll; padding: 1em; border: 1px solid #ccc; background-color: var(--background-color); color: var(--text-color);'>
+    <div id='chat-box' style='height: 300px; overflow-y: auto; padding: 1em; border: 1px solid #ccc; background-color: var(--background-color);'>
     """
 
     for speaker, message in st.session_state.chat_history:
@@ -44,34 +38,29 @@ if st.session_state.chat_history:
 
     st.markdown("""
     <script>
-    const chatBox = window.parent.document.querySelector("#chat-box");
-    if (chatBox) {
-        chatBox.scrollTop = chatBox.scrollHeight;
-    }
+    function scrollDown(dummy_var){{
+        const chatBox = document.getElementById("chat-box");
+        if (chatBox) {
+            chatBox.scrollTo({
+                top: chatBox.scrollHeight,
+                behavior: "smooth"
+            });
+        }
+    }}
+    scrollDown({len(st.session_state.chat_history)});
     </script>
     """, unsafe_allow_html=True)
 
-with st.form("chat_form", clear_on_submit=True):
-    user_input = st.text_input("Ask a question:", key="user_input", label_visibility="collapsed")
-    submitted = st.form_submit_button("Send")
-
-if submitted and user_input.strip():
+user_input = st.chat_input("Ask a question:")
+if user_input and user_input.strip():
     st.session_state.chat_history.append(("User", user_input.strip()))
-    st.session_state.user_input = ""
-    st.rerun()
+    user_message = user_input.strip()
 
-# Check if last message is from user and no assistant reply yet
-if (
-    len(st.session_state.chat_history) >= 1 and
-    st.session_state.chat_history[-1][0] == "User" and
-    (len(st.session_state.chat_history) < 2 or st.session_state.chat_history[-2][0] != "Advisor")
-):
     with st.spinner("Advisor is typing..."):
-        user_message = st.session_state.chat_history[-1][1]
         history_without_last = st.session_state.chat_history[:-1]  # Optional context
         response = RAG.get_chatbot_response(user_message, st.session_state.uploaded_docs, history_without_last)
         st.session_state.chat_history.append(("Advisor", response))
-        st.rerun()
+    st.rerun()
 
 # Upload documents
 uploaded_files = st.file_uploader("Copy and paste your transcript into a file called transcript.txt, and upload it here for questions related to graduation or course recommendations.", type=["txt", "json"], accept_multiple_files=True)
