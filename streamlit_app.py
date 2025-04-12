@@ -1,16 +1,15 @@
 #import os
 #os.environ["TORCH_DISABLE_SOURCE_WATCHER"] = "none"
 print("Starting")
-#__import__('pysqlite3')
-#import sys
-#sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+__import__('pysqlite3')
+import sys
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 print("Importing streamlit")
 import streamlit as st
-print("Streamlit imported")
+
 st.set_page_config(page_title="Academic Advisor Chatbot", layout="centered")
-print("Importing RAG.py")
-import RAG
-print("RAG.py imported")
+
+from RAG import get_chatbot_response
 import sqlite3
 print("Setup Complete")
 st.markdown("## Academic Advising Chatbot")
@@ -24,6 +23,9 @@ if "uploaded_docs" not in st.session_state:
 if "user_input" not in st.session_state:
     st.session_state.user_input = ""
 
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
+
 if st.session_state.chat_history:
     chat_html = """
     <div id='chat-box' style='height: 300px; overflow-y: auto; padding: 1em; border: 1px solid #ccc; background-color: var(--background-color);'>
@@ -35,21 +37,6 @@ if st.session_state.chat_history:
     chat_html += "</div>"
 
     st.markdown(chat_html, unsafe_allow_html=True)
-
-    st.markdown("""
-    <script>
-    function scrollDown(dummy_var){{
-        const chatBox = document.getElementById("chat-box");
-        if (chatBox) {
-            chatBox.scrollTo({
-                top: chatBox.scrollHeight,
-                behavior: "smooth"
-            });
-        }
-    }}
-    scrollDown({len(st.session_state.chat_history)});
-    </script>
-    """, unsafe_allow_html=True)
 
 user_input = st.chat_input("Ask a question:")
 if user_input and user_input.strip():
