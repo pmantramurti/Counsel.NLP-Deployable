@@ -200,10 +200,6 @@ prompt_template = """
 
     Answer:
     """
-if "all_documents" not in st.session_state:
-    st.session_state.all_documents = []
-if "docs_saved" not in st.session_state:
-    st.session_state.docs_saved = []
 def generate(state: State) -> State:
     docs_content = "\n\n".join(doc.page_content for doc in state["context"])
     prior_docs_count = int(np.sum(st.session_state.docs_saved[-MEMORY_LENGTH:]))
