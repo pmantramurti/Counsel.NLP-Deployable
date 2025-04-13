@@ -54,7 +54,7 @@ def load_llm():
             task="text-generation",
             max_new_tokens=256,
             do_sample=False,
-            temperature=0.01,
+            temperature=0.4,
             repetition_penalty=1.03
         )
     except Exception as e:
