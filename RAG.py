@@ -54,7 +54,7 @@ def load_llm():
             task="text-generation",
             max_new_tokens=256,
             do_sample=False,
-            temperature=0.4,
+            temperature=0.01,
             repetition_penalty=1.03
         )
     except Exception as e:
@@ -188,13 +188,16 @@ prompt_template = """
     Answer the question based on the context below.
     Do not make up information. Be concise and to the point.
 
-    Context: {prior_context}{context}
-
+    Context: {context}
+    
     User Info:
     {uploaded_docs}
 
     Dialogue thus far:
     {chat_history}
+    
+    Context for past dialogue:
+    {prior_context}
 
     Question: {question}
 
