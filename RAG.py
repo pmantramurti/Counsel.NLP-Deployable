@@ -4,6 +4,7 @@ import traceback
 import zipfile
 import streamlit as st
 import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
 from typing_extensions import List, TypedDict
 from langchain.schema import Document
 from langchain_huggingface import HuggingFaceEndpoint, HuggingFaceEmbeddings
@@ -40,7 +41,7 @@ def load_vector_store():
     embeddings = load_embeddings()
     print("Unzipping vector store")
     directory = unzip_vector_store()
-    return Chroma(persist_directory=directory, embedding_function=embeddings)
+    return Chroma(persist_directory=directory, embedding_function=embeddings), embeddings
 
 
 @st.cache_resource
@@ -50,11 +51,12 @@ def load_llm():
         login(st.secrets.get("HF_TOKEN", ""))
         print("Loading model pipeline")
         return HuggingFaceEndpoint(
-            repo_id="meta-llama/Llama-3.2-3B-Instruct",
+            #repo_id="meta-llama/Llama-3.2-3B-Instruct",
+            repo_id="meta-llama/Llama-3.3-70B-Instruct",
             task="text-generation",
             max_new_tokens=256,
             do_sample=False,
-            temperature=0.2,
+            temperature=0.1,
             repetition_penalty=1.03
         )
     except Exception as e:
@@ -68,7 +70,7 @@ def load_courses(filepath="courses.txt"):
         return f.read().splitlines()
 
 
-vector_store = load_vector_store()
+vector_store, embeddings = load_vector_store()
 print("vector store loaded")
 llm = load_llm()
 print("model loaded")
@@ -167,7 +169,6 @@ class State(TypedDict):
     question: str
     context: List[Document]
     answer: str
-    uploaded_docs: str | None
     source_documents: List[str]
     chat_history: List[str]
 
@@ -183,37 +184,43 @@ def retrieve(state: State) -> State:
         "source_documents": [doc.page_content for doc in retrieved_docs]
     }
 
-
+#results = vector_store.similarity_search_with_relevance_scores("your query", k=4)
 prompt_template = """
-    You are an academic advising assistant. Respond factually and clearly using only the provided information. Do not answer if the answer is not in the context. Avoid repeating the question.
-    
-    Format your response in a clean, bullet-pointed or short paragraph style.
-    
-    Context:
-    {context}
-    
-    User Info:
-    {uploaded_docs}
-    
-    Dialogue so far:
-    {chat_history}
-    
-    Past conversation context:
-    {prior_context}
-    
-    Question:
-    {question}
-    
-    Answer:
-    """
+You are an academic advising assistant. Respond factually and clearly using only the provided information.
+
+If you do not know the answer, say so. Use newline characters to format your response.
+
+The most important thing is that you do not provide or answer any question other than the User's question.
+
+{uploaded_docs}
+
+{chat_history}
+
+Context:
+{context}
+
+{prior_context}
+
+Question:
+{question}
+
+Answer:
+"""
 def generate(state: State) -> State:
     docs_content = "\n\n".join(doc.page_content for doc in state["context"])
     prior_docs_count = int(np.sum(st.session_state.docs_saved[-MEMORY_LENGTH:]))
-    prior_content = "\n\n".join(
-        doc for doc in st.session_state.all_documents[-prior_docs_count:]
+    prior_content = (
+        "Past conversation context:\n\n" + "\n\n".join(
+            doc for doc in st.session_state.all_documents[-prior_docs_count:]
+        )
+        if prior_docs_count > 0
+        else ""
     )
-    uploaded_content = "\n\n".join(doc["content"] for doc in state.get("uploaded_docs", []))
-    chat_history = "\n".join(f"{speaker},{content}" for speaker, content in state.get("chat_history", [])[-(MEMORY_LENGTH*2):])
+    uploaded_content = (
+        st.session_state.uploaded_docs["content"]
+    )
+    print(uploaded_content)
+    chat_history = "Dialogue so far:" + "\n".join(f"{speaker},{content}" for speaker, content in state.get("chat_history", [])[-(MEMORY_LENGTH*2):])
     messages = prompt_template.format(
         context=docs_content,
         prior_context=prior_content,
@@ -223,19 +230,37 @@ def generate(state: State) -> State:
     )
     response = llm.invoke(messages)
     num_docs = 0
-    for doc in state["context"]:
+
+    filtered_docs = compare_docs_to_answer(response, state["context"], embeddings)
+    print(len(filtered_docs))
+    for doc in filtered_docs:
         if doc.page_content not in st.session_state.all_documents:
             num_docs += 1
             st.session_state.all_documents.append(doc.page_content)
     st.session_state.docs_saved.append(num_docs)
     # Post-processing
     response = response.replace("\n", " ").replace("  ", " ")
-    response = re.sub(r"\bI don't know\b|\bAdditionally\b|\bIn conclusion\b|\bbased on the context\b", "",
-                      response).strip()
+    response = response.split("Question:")[0]
+    #response = re.sub(r"\bI don't know\b|\bAdditionally\b|\bIn conclusion\b|\bbased on the context\b", "",
+    #                  response).strip()
+    response = re.sub(r"\bI don't know\b|\bbased on the context\b", "",response).strip()
     response = re.sub(r"\t\+|\t", "", response)
-
+    response = re.sub("•", "\n\t•", response)
+    #print(response)
     return {"answer": response, "source_documents": state["source_documents"]}
 
+def compare_docs_to_answer(response, docs, embeds, threshold=0.75):
+    response_embedding = embeds.embed_query(response)
+    doc_texts = [doc.page_content for doc in docs]
+    if not doc_texts:
+        return []
+    doc_embeddings = embeds.embed_documents(doc_texts)
+    if not doc_embeddings:
+        return []
+    sims = cosine_similarity([response_embedding], doc_embeddings)[0]
+    filtered_docs = [doc for doc, sim in zip(docs, sims) if sim >= threshold]
+
+    return filtered_docs
 
 graph_builder = StateGraph(State).add_sequence([retrieve, generate])
 graph_builder.add_edge(START, "retrieve")
