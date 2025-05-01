@@ -75,7 +75,7 @@ def course_recommendation(transcript_courses, student_major):
 def display_recommendation(courses, final_recommendation, needed_credits, gpa_final, student_major):
     output_string = "Note: User is only ready to graduate if there are no sections with remaining credits.\n"
     output_string += "Make sure to make separate recommendations for each possible specialization, if they exist.\n"
-    output_string += "You only need to mention a section if it has remaining required credits."
+    output_string += "You only need to mention a section if it has remaining required credits.\n"
     output_string += "User Transcript: \n Major : " + student_major + " \n Current GPA : " + str(gpa_final) + "\n\n"
     #output_string += "They have taken :\n"
     #for course_code, (grade_earned, semester_taken) in courses.items():
@@ -87,8 +87,11 @@ def display_recommendation(courses, final_recommendation, needed_credits, gpa_fi
                 for category in final_recommendation[specialization].keys():
                     if isinstance(final_recommendation[specialization][category], dict):
                         for section in final_recommendation[specialization][category].keys():
-                            output_string += "\t" + section.replace("_", " ").title() + " section of " + category.replace("_", " ").title() + ":" + str(needed_credits[specialization][category][section]) + " credits.\n"
                             if final_recommendation[specialization][category][section] != ["Requirement Met"]:
+                                output_string += "\t" + section.replace("_",
+                                                                        " ").title() + " section of " + category.replace(
+                                    "_", " ").title() + ":" + str(
+                                    needed_credits[specialization][category][section]) + " credits.\n"
                                 output_string += "\t\t Course(s) user can take: "
                                 #+ final_recommendation[specialization][category][section] + "\n")
                                 #print(final_recommendation[specialization][category][section])
@@ -101,8 +104,9 @@ def display_recommendation(courses, final_recommendation, needed_credits, gpa_fi
                                         output_string +=  ", " + course
                                 output_string += "\n"
                     else:
-                        output_string += "\t" + category.replace("_", " ").title() + ":" + str(needed_credits[specialization][category]) + " credits.\n"
                         if final_recommendation[specialization][category] != ["Requirement Met"]:
+                            output_string += "\t" + category.replace("_", " ").title() + ":" + str(
+                                needed_credits[specialization][category]) + " credits.\n"
                             output_string += "\t\t Course(s) user can take:"
                             output_string += final_recommendation[specialization][category][0]
                             first = True
@@ -116,8 +120,9 @@ def display_recommendation(courses, final_recommendation, needed_credits, gpa_fi
         for category in final_recommendation.keys():
             if isinstance(final_recommendation[category], dict):
                 for section in final_recommendation[category].keys():
-                    output_string += "\t" + section.replace("_", " ").title() + " section of " + category.replace("_", " ").title() + ": " + str(needed_credits[category][section]) + " credits.\n"
                     if final_recommendation[category] != ["Requirement Met"]:
+                        output_string += "\t" + section.replace("_", " ").title() + " section of " + category.replace(
+                            "_", " ").title() + ": " + str(needed_credits[category][section]) + " credits.\n"
                         output_string += "\t\t Course(s) user can take:"
                         output_string += final_recommendation[category][0]
                         first = True
@@ -128,8 +133,9 @@ def display_recommendation(courses, final_recommendation, needed_credits, gpa_fi
                                 output_string += ", " + course
                         output_string += "\n"
             else:
-                output_string += "\t" + category.replace("_", " ").title() + " category: " + str(needed_credits[category]) + " credits.\n"
                 if final_recommendation[category] != ["Requirement Met"]:
+                    output_string += "\t" + category.replace("_", " ").title() + " category: " + str(
+                        needed_credits[category]) + " credits.\n"
                     output_string += "\t\t Course(s) user can take:"
                     output_string += final_recommendation[category][0]
                     first = True
@@ -139,6 +145,12 @@ def display_recommendation(courses, final_recommendation, needed_credits, gpa_fi
                         else:
                             output_string += ", " + course
                     output_string += "\n"
+    courses_taken = list(courses.keys())
+    output_string += "Courses taken: " + courses_taken[0]
+    #print(courses)
+    for course in courses_taken:
+        if course is not courses_taken[0]:
+            output_string += ', ' + course
     return output_string
 
 def process_transcript(transcript, major_data, major_struct, specialization = None):

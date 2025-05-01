@@ -173,11 +173,11 @@ class State(TypedDict):
     chat_history: List[str]
 
 def retrieve(state: State) -> State:
-    filter = classify_question(state["question"])
+    docs_filter = classify_question(state["question"])
     retrieved_docs = vector_store.similarity_search(
         state["question"],
         k=NUM_DOCS,
-        filter=filter
+        filter=docs_filter
     )
     return {
         "context": retrieved_docs,
@@ -217,7 +217,7 @@ def generate(state: State) -> State:
         else ""
     )
     keywords = ["graduate", "graduation", "course", "coursework", "gpa", "credit", "transcript", "requirement",
-                "degree", "complete"]
+                "degree", "complete", "recommend"]
     norm_question = normalize(state["question"])
     if any(kw in norm_question for kw in keywords) or st.session_state.user_input_given:
         uploaded_content = st.session_state.uploaded_docs["content"]
@@ -225,14 +225,16 @@ def generate(state: State) -> State:
             st.session_state.user_input_given = True
     else:
         uploaded_content = ""
-    print(uploaded_content)
+    #print(uploaded_content)
     if state.get("chat_history", []):
         chat_history = "Dialogue so far:" + "\n".join(
             f"{speaker},{content}" for speaker, content in state["chat_history"][-(MEMORY_LENGTH * 2):]
         )
     else:
         chat_history = ""
-    print(docs_content)
+    #print(docs_content)
+    if "f1" in state["question"] or "f-1" in state["question"]:
+        state["question"] += " work"
     messages = prompt_template.format(
         context=docs_content,
         prior_context=prior_content,
