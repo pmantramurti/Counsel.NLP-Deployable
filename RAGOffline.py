@@ -4,13 +4,14 @@ import traceback
 import zipfile
 import streamlit as st
 import numpy as np
+import torch
+from transformers import pipeline, AutoModelForCausalLM, AutoTokenizer
 from sklearn.metrics.pairwise import cosine_similarity
 from typing_extensions import List, TypedDict
 from langchain.schema import Document
-from langchain_huggingface import HuggingFaceEndpoint, HuggingFaceEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
 from langgraph.graph import START, StateGraph
-from huggingface_hub import login
 from huggingface_hub.utils import HfHubHTTPError
 
 NUM_DOCS = 10
@@ -47,20 +48,24 @@ def load_vector_store():
 @st.cache_resource
 def load_llm():
     try:
-        print("Logging in")
-        login(st.secrets.get("HF_TOKEN", ""))
-        print("Loading model pipeline")
-        return HuggingFaceEndpoint(
-            #repo_id="meta-llama/Llama-3.2-3B-Instruct",
-            repo_id="meta-llama/Llama-3.3-70B-Instruct",
+        model_name = "meta-llama/Llama-3.2-3B-Instruct"
+        local_dir = "./local_llama_model"
+
+        tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=local_dir)
+        model = AutoModelForCausalLM.from_pretrained(model_name, cache_dir=local_dir, device_map="cpu", low_cpu_mem_usage=True, torch_dtype=torch.bfloat16)
+        pipe = pipeline(
             task="text-generation",
+            model=model,
+            tokenizer=tokenizer,
             max_new_tokens=256,
             do_sample=False,
-            temperature=0.3,
-            repetition_penalty=1.2
+            temperature=0.2,
+            repetition_penalty=1.03
         )
+        return pipe
+
     except Exception as e:
-        st.error("🚨 Could not load the LLM. Check your token or connectivity.")
+        st.error("🚨 Could not load the local LLM. Check your files or system memory.")
         st.stop()
 
 
@@ -190,21 +195,21 @@ You are an academic advising assistant. Respond factually and clearly using only
 
 If you do not know the answer, say so. Use newline characters to format your response.
 
-Do not provide any information that is not required to answer the question.
+The most important thing is that you do not provide or answer any question other than the User's question.
 
 {uploaded_docs}
 
 {chat_history}
 
-Context:
+Context (Ignore current and prior context if user info is required to answer the question):
 {context}
 
 {prior_context}
 
-Important: If the user's question does not require context, ignore all context given
+Question:
+{question}
 
-### User: {question}
-### Advisor:
+### Response:
 """
 def generate(state: State) -> State:
     docs_content = "\n\n".join(doc.page_content for doc in state["context"])
@@ -216,23 +221,11 @@ def generate(state: State) -> State:
         if prior_docs_count > 0
         else ""
     )
-    keywords = ["graduate", "graduation", "course", "coursework", "gpa", "credit", "transcript", "requirement",
-                "degree", "complete"]
-    norm_question = normalize(state["question"])
-    if any(kw in norm_question for kw in keywords) or st.session_state.user_input_given:
-        uploaded_content = st.session_state.uploaded_docs["content"]
-        if not st.session_state.user_input_given and uploaded_content != "IMPORTANT: If the question is about the user's coursework or about their graduation, then ask them to upload transcript.txt as your response. For anything else, skip this line and use the rest of the information provided to answer their question":
-            st.session_state.user_input_given = True
-    else:
-        uploaded_content = ""
+    uploaded_content = (
+        st.session_state.uploaded_docs["content"]
+    )
     print(uploaded_content)
-    if state.get("chat_history", []):
-        chat_history = "Dialogue so far:" + "\n".join(
-            f"{speaker},{content}" for speaker, content in state["chat_history"][-(MEMORY_LENGTH * 2):]
-        )
-    else:
-        chat_history = ""
-    print(docs_content)
+    chat_history = "Dialogue so far:" + "\n".join(f"{speaker},{content}" for speaker, content in state.get("chat_history", [])[-(MEMORY_LENGTH*2):])
     messages = prompt_template.format(
         context=docs_content,
         prior_context=prior_content,
@@ -240,7 +233,11 @@ def generate(state: State) -> State:
         question=state["question"],
         chat_history=chat_history
     )
-    response = llm.invoke(messages)
+    raw_response = llm(messages)[0]["generated_text"]
+    if "### Response:" in raw_response:
+        response = raw_response.split("### Response:")[-1].strip()
+    else:
+        response = raw_response
     num_docs = 0
 
     filtered_docs = compare_docs_to_answer(response, state["context"], embeddings)
@@ -252,23 +249,19 @@ def generate(state: State) -> State:
     st.session_state.docs_saved.append(num_docs)
     # Post-processing
     response = response.replace("\n", " ").replace("  ", " ")
-    response = response.split("### User:")[0]
+    response = response.split("Question:")[0]
     #response = re.sub(r"\bI don't know\b|\bAdditionally\b|\bIn conclusion\b|\bbased on the context\b", "",
     #                  response).strip()
-    response = re.sub(r"\bbased on the context\b", "",response).strip()
+    response = re.sub(r"\bI don't know\b|\bbased on the context\b", "",response).strip()
     response = re.sub(r"\t\+|\t", "", response)
     response = re.sub("•", "\n\t•", response)
     #print(response)
     return {"answer": response, "source_documents": state["source_documents"]}
 
-def compare_docs_to_answer(response, docs, embeds, threshold=0.5):
+def compare_docs_to_answer(response, docs, embeds, threshold=0.75):
     response_embedding = embeds.embed_query(response)
     doc_texts = [doc.page_content for doc in docs]
-    if not doc_texts:
-        return []
     doc_embeddings = embeds.embed_documents(doc_texts)
-    if not doc_embeddings:
-        return []
     sims = cosine_similarity([response_embedding], doc_embeddings)[0]
     filtered_docs = [doc for doc, sim in zip(docs, sims) if sim >= threshold]
 

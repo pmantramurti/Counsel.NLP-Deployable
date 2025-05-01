@@ -1,9 +1,9 @@
 #import os
 #os.environ["TORCH_DISABLE_SOURCE_WATCHER"] = "none"
 print("Starting")
-__import__('pysqlite3')
-import sys
-sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+#__import__('pysqlite3')
+#import sys
+#sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 print("Importing streamlit")
 import torch
 import os
@@ -24,7 +24,7 @@ st.markdown("## Academic Advising Chatbot")
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 if "uploaded_docs" not in st.session_state:
-    user_info = "IMPORTANT: If the question requires the user's personal info, then ask them to upload transcript.txt as your response. Otherwise, use the rest of the information provided to answer their question"
+    user_info = "IMPORTANT: If the question is about the user's coursework or about their graduation, then ask them to upload transcript.txt as your response. For anything else, skip this line and use the rest of the information provided to answer their question"
     st.session_state.uploaded_docs = {"name": "user_info", "content": user_info}
 if "all_documents" not in st.session_state:
     st.session_state.all_documents = []
@@ -32,6 +32,8 @@ if "docs_saved" not in st.session_state:
     st.session_state.docs_saved = []
 if "user_input" not in st.session_state:
     st.session_state.user_input = ""
+if "user_input_given" not in st.session_state:
+    st.session_state.user_input_given = False
 
 chat_html = """
 <div id='chat-box' style='height: 250px; overflow-y: auto; padding: 1em; border: 1px solid #ccc; background-color: var(--background-color);'>
