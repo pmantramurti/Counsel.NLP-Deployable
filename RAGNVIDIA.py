@@ -77,7 +77,8 @@ print("vector store loaded")
 llm = load_llm()
 print("model loaded")
 courses = load_courses()
-courses.remove("")
+if "" in courses:
+  courses.remove("")
 
 def normalize(text: str) -> str:
     return re.sub(r"\s+", " ", text.lower().replace("-", " ")).strip()
