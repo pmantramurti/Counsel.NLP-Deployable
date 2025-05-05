@@ -228,7 +228,7 @@ Context:
 """
 def generate(state: State) -> State:
     docs_content = "\n\n".join(doc.page_content for doc in state["context"])
-    print(docs_content)
+    st.session_state.curr_docs_retrieved = docs_content
     prior_docs_count = int(np.sum(st.session_state.docs_saved[-MEMORY_LENGTH:]))
     prior_content = (
         "Past conversation context:\n\n" + "\n\n".join(
