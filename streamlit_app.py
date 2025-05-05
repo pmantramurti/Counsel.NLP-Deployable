@@ -50,6 +50,7 @@ for speaker, message in st.session_state.chat_history:
     print(st.session_state.curr_docs_retrieved)
     chat_html += f"**{speaker}:**\n\n {newline_msg}\n\n"
 
+chat_html += st.session_state.curr_docs_retrieved
 chat_html += "</div>"
 st.markdown(chat_html, unsafe_allow_html=True)
 
