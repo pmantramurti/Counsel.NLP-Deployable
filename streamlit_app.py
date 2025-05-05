@@ -37,7 +37,8 @@ if "user_input" not in st.session_state:
     st.session_state.user_input = ""
 if "user_input_given" not in st.session_state:
     st.session_state.user_input_given = False
-
+if "curr_docs_retrieved" not in st.session_state:
+    st.session_state.curr_docs_retrieved = ""
 chat_html = """
 <div id='chat-box' style='height: 400px; overflow-y: auto; padding: 1em; border: 1px solid #ccc; background-color: var(--background-color);'>
 """
@@ -46,6 +47,7 @@ for speaker, message in st.session_state.chat_history:
     newline_msg = re.sub(r'\s(\d+\.\s)', r'\n\1', message)
     newline_msg = re.sub(r' - ', r'\n - ', newline_msg)
     print(newline_msg)
+    print(st.session_state.curr_docs_retrieved)
     chat_html += f"**{speaker}:**\n\n {newline_msg}\n\n"
 
 chat_html += "</div>"
