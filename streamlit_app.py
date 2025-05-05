@@ -1,9 +1,9 @@
 #import os
 #os.environ["TORCH_DISABLE_SOURCE_WATCHER"] = "none"
 print("Starting")
-__import__('pysqlite3')
-import sys
-sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+#__import__('pysqlite3')
+#import sys
+#sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 print("Importing streamlit")
 import torch
 import os
@@ -12,19 +12,22 @@ import streamlit as st
 print("Streamlit imported")
 st.set_page_config(page_title="Academic Advisor Chatbot", layout="centered")
 print("Importing RAG.py")
-import RAG
+import RAGNVIDIA
+#import RAG
 #import RAGOffline
 print("RAG.py imported")
 import sqlite3
 print("Setup Complete")
 import courseRec
 st.markdown("## Academic Advising Chatbot")
+import markdown
+import re
 
 # Initialize session states
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 if "uploaded_docs" not in st.session_state:
-    user_info = "IMPORTANT: If the question is about the user's coursework or about their graduation, then ask them to upload transcript.txt as your response. For anything else, skip this line and use the rest of the information provided to answer their question"
+    user_info = "IMPORTANT: If the question is about the user's coursework or about their graduation, then ask them to upload 'transcript.txt' as your response. For anything else, skip this line and use the rest of the information provided to answer their question"
     st.session_state.uploaded_docs = {"name": "user_info", "content": user_info}
 if "all_documents" not in st.session_state:
     st.session_state.all_documents = []
@@ -36,11 +39,13 @@ if "user_input_given" not in st.session_state:
     st.session_state.user_input_given = False
 
 chat_html = """
-<div id='chat-box' style='height: 250px; overflow-y: auto; padding: 1em; border: 1px solid #ccc; background-color: var(--background-color);'>
+<div id='chat-box' style='height: 400px; overflow-y: auto; padding: 1em; border: 1px solid #ccc; background-color: var(--background-color);'>
 """
-
+chat_html += "\n"
 for speaker, message in st.session_state.chat_history:
-    chat_html += f"<p><strong>{speaker}:</strong> {message}</p>"
+    newline_msg = re.sub(r'\s(\d+\.\s)', r'\n\1', message)
+    print(newline_msg)
+    chat_html += f"**{speaker}:**\n\n {newline_msg}\n\n"
 
 chat_html += "</div>"
 st.markdown(chat_html, unsafe_allow_html=True)
@@ -77,7 +82,7 @@ if st.session_state.get("awaiting_response", False):
         user_message = st.session_state.chat_history[-1][1]
         history_without_last = st.session_state.chat_history[:-1]
 
-        response = RAG.get_chatbot_response(user_message, st.session_state.uploaded_docs, history_without_last)
-        st.session_state.chat_history.append(("Advisor", response.replace('\n', '<br>')))
+        response = RAGNVIDIA.get_chatbot_response(user_message, st.session_state.uploaded_docs, history_without_last)
+        st.session_state.chat_history.append(("Advisor", response))#.replace('\n', '<br>')))
         st.session_state.awaiting_response = False
         st.rerun()
