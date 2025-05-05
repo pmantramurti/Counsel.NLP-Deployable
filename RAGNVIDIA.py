@@ -127,7 +127,12 @@ def classify_question(question: str):
             filter = {"$and": filters} if "and" in normalized_question else {"$or": filters}
             if len(filters) < 2:
                 filter = filters
-            return filter[0] if len(filters) != 0 else None
+            if not filters:
+                return None
+            if isinstance(filter, list):
+                return filter[0]
+            return filter
+            #return filter[0] if len(filters) != 0 else None
 
         elif "prerequisite" in normalized_question:
             i = 1
@@ -137,7 +142,12 @@ def classify_question(question: str):
             filter = {"$and": filters} if "and" in normalized_question else {"$or": filters}
             if len(filters) < 2:
                 filter = filters
-            return filter[0] if len(filters) != 0 else None
+            if not filters:
+                return None
+            if isinstance(filter, list):
+                return filter[0]
+            return filter
+            #return filter[0] if len(filters) != 0 else None
 
         else:
             i = 1
@@ -147,7 +157,12 @@ def classify_question(question: str):
             filter = {"$and": filters} if "and" in normalized_question else {"$or": filters}
             if len(filters) < 2:
                 filter = filters
-            return filter[0] if len(filters) != 0 else None
+            if not filters:
+                return None
+            if isinstance(filter, list):
+                return filter[0]
+            return filter
+            #return filter[0] if len(filters) != 0 else None
 
     elif "need" in normalized_question:
         last_course = ""
