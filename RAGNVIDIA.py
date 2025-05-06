@@ -247,13 +247,21 @@ def generate(state: State) -> State:
     # Require BOTH a keyword AND a personal reference
     has_keyword = any(kw in norm_question for kw in keywords)
     has_pronoun = any(pr in f" {norm_question} " for pr in personal_pronouns)
+    filter_prompt = ("""You are an academic advisor. Please read the following question, and determine if you would need to see their transcript in order to answer it.
+        Please answer with [YES] or [NO].
+        ### User: {question}
+        ### Your answer:
+                         """)
+    filter_query = filter_prompt.format(question=state["question"])
 
-    #if has_keyword and has_pronoun:
-    uploaded_content = st.session_state.uploaded_docs["content"]
-        #prior_content = ""
-        #docs_content = ""
-    #else:
-        #uploaded_content = ""
+    is_personal = "yes" in normalize(llm.invoke(filter_query).content)
+    print(filter_query)
+    if is_personal:
+        uploaded_content = st.session_state.uploaded_docs["content"]
+        prior_content = ""
+        docs_content = ""
+    else:
+        uploaded_content = ""
     #print(uploaded_content)
     if state.get("chat_history", []):
         chat_history = "Dialogue so far:" + "\n".join(
