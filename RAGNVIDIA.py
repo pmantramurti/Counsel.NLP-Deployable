@@ -17,7 +17,7 @@ from langchain_nvidia_ai_endpoints import ChatNVIDIA
 if not os.environ.get("NVIDIA_API_KEY"):
   os.environ["NVIDIA_API_KEY"] = "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"
 
-NUM_DOCS = 5
+NUM_DOCS = 3
 MEMORY_LENGTH = 2
 @st.cache_resource
 def unzip_vector_store(zip_path="vector__store.zip", extract_to="vector__store"):
