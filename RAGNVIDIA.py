@@ -247,12 +247,14 @@ def generate(state: State) -> State:
     # Require BOTH a keyword AND a personal reference
     has_keyword = any(kw in norm_question for kw in keywords)
     has_pronoun = any(pr in f" {norm_question} " for pr in personal_pronouns)
-    filter_prompt = ("""You are an academic advisor. Please read the following question, and determine if you would need to see their transcript in order to answer it.
-        Please answer with [YES] or [NO].
-        ### User: {question}
-        ### Your answer:
-                         """)
-    filter_query = filter_prompt.format(question=state["question"])
+    filter_prompt = ("""You are an academic advisor.
+    You have been given some contextual information, and then a user's question.
+    Once you have read both, please determine if you would need to see the user's transcript in order to answer their question.
+    Please answer with [YES] or [NO].
+    ### Context: {context}
+    ### User's question: {question}
+    ### Your answer:""")
+    filter_query = filter_prompt.format(question=state["question"], context=docs_content)
 
     is_personal = "yes" in normalize(llm.invoke(filter_query).content)
     print(filter_query)
