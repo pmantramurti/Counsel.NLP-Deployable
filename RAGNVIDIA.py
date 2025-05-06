@@ -23,7 +23,7 @@ MEMORY_LENGTH = 2
 def unzip_vector_store(zip_path="vector__store.zip", extract_to="vector__store"):
     if not os.path.exists(extract_to):
         with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-            zip_ref.extractall(extract_to)
+            zip_ref.extractall()
     return extract_to
 
 
