@@ -262,13 +262,13 @@ Answer [YES] if the question depends on personalized data like:
 - The specific courses the student has already completed
 - The student’s GPA or academic progress
 - Specific degree progress that depends on individual transcripts
-- This includes any question asking for personalized course recommendations (for example, "What should I take next?"), even if no transcript is explicitly mentioned.
+- The user is asking for recommendations that depend on their own record (for example, "What courses should I take next semester?" or "What electives do I have left?")
 
-Answer [NO] if the question can be fully answered using only general academic information (such as course catalogs, official policies, standard program requirements, or general degree rules) without needing to know anything about the student’s personal transcript.
+Answer [NO] if the question can be fully answered using only general academic information (such as course catalogs, official policies, standard program requirements, or general degree rules), without needing to know anything about the student’s personal transcript.
 
 Important clarification:
-If the question simply mentions the user's major or program (for example, "As an MSSE major...") but does not ask for personalized progress based on their transcript, treat it as a general question.
-Do not assume a question needs personal data just because the major or specialization is mentioned.
+- If the question asks for general course ideas (for example, "I need a general education course that covers physical activities. Any recommendations?"), classify it as [NO] because no transcript is needed.
+- If the question mentions the user’s major (for example, "What electives are available for the MSSE major?"), but does not ask about the student's personal progress or completed courses, classify it as [NO].
 
 Examples:
 
