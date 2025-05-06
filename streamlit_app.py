@@ -46,8 +46,6 @@ chat_html += "\n"
 for speaker, message in st.session_state.chat_history:
     newline_msg = re.sub(r'\s(\d+\.\s)', r'\n\1', message)
     newline_msg = re.sub(r' - ', r'\n - ', newline_msg)
-    print(newline_msg)
-    print(st.session_state.curr_docs_retrieved)
     chat_html += f"**{speaker}:**\n\n {newline_msg}\n\n"
 
 chat_html += st.session_state.curr_docs_retrieved
