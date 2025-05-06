@@ -68,11 +68,9 @@
                 { "course": "CMPE 298", "title": "Special Problems", "units": 3 }
             ]
         },
-        "graduate_writing_requirement": {
-            "course": "CMPE 294",
-            "title": "Computer Engineering Seminar",
-            "units": 3
-        },
+        "graduate_writing_requirement": [
+            {"course": "CMPE 294", "title": "Computer Engineering Seminar", "units": 3}
+        ],
         "culminating_experience": {
             "Masters Thesis": [
                 { "course": "CMPE 299A", "title": "Master's Thesis I", "units": 3 },

@@ -67,11 +67,9 @@
             ],
             "notes": "Any graduate courses listed above not used to satisfy degree requirements may be used as an elective course."
         },
-        "graduate_writing_requirement": {
-            "course": "CS 200W",
-            "title": "Graduate Technical Writing",
-            "units": 3
-        },
+        "graduate_writing_requirement": [
+            {"course": "CS 200W", "title": "Graduate Technical Writing", "units": 3},
+        ],
         "culminating_experience": {
             "Plan A (Thesis)": [
                 { "course": "CS 297", "title": "Preparation for Writing Project or Thesis", "units": 3 },

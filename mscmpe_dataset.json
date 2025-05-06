@@ -69,22 +69,20 @@
                 "CMPE 270", "CMPE 271", "CMPE 298", "CMPE 298i", "CMPE 295A", "CMPE 295B", "CMPE 299A", "CMPE 299B"
             ]
         },
-        "graduate_writing_requirement": {
-            "options": [
-                {
-                    "course": "CMPE 294",
-                    "title": "Computer Engineering Seminar",
-                    "units": 3,
-                    "description": "Seminar covering advanced research topics in software engineering and technology."
-                },
-                {
-                    "course": "ENGR 200W",
-                    "title": "Engineering Reports",
-                    "units": 3,
-                    "description": "Technical writing for engineers, focusing on research documentation and professional communication."
-                }
-            ]
-        },
+        "graduate_writing_requirement": [
+            {
+                "course": "CMPE 294",
+                "title": "Computer Engineering Seminar",
+                "units": 3,
+                "description": "Seminar covering advanced research topics in software engineering and technology."
+            },
+            {
+                "course": "ENGR 200W",
+                "title": "Engineering Reports",
+                "units": 3,
+                "description": "Technical writing for engineers, focusing on research documentation and professional communication."
+            }
+        ],
         "culminating_experience": {
             "Masters Project": [
                 {
