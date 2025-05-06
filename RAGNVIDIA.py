@@ -17,13 +17,13 @@ from langchain_nvidia_ai_endpoints import ChatNVIDIA
 if not os.environ.get("NVIDIA_API_KEY"):
   os.environ["NVIDIA_API_KEY"] = "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"
 
-NUM_DOCS = 3
+NUM_DOCS = 5
 MEMORY_LENGTH = 2
 @st.cache_resource
 def unzip_vector_store(zip_path="vector__store.zip", extract_to="vector__store"):
     if not os.path.exists(extract_to):
         with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-            zip_ref.extractall()
+            zip_ref.extractall(extract_to)
     return extract_to
 
 
@@ -77,8 +77,7 @@ print("vector store loaded")
 llm = load_llm()
 print("model loaded")
 courses = load_courses()
-if "" in courses:
-  courses.remove("")
+
 
 def normalize(text: str) -> str:
     return re.sub(r"\s+", " ", text.lower().replace("-", " ")).strip()
@@ -213,7 +212,9 @@ Keep your responses short.
 
 If you do not know the answer, say so. Do not provide any information that is not required to answer the question.
 
-Break up your response into numbered sections only if needed. If you don't know something, like the course name associated with a course code, just give the code.
+Break up your response into numbered sections only if needed. 
+
+If you don't know something, like the course name associated with a course code, just give the code.
 
 {uploaded_docs}
 
@@ -238,39 +239,75 @@ def generate(state: State) -> State:
         if prior_docs_count > 0
         else ""
     )
-    keywords = ["graduate", "graduation", "course", "coursework", "gpa", "credit",
-                "transcript", "requirement", "degree"]
-    personal_pronouns = [" my ", " i ", " me ", " myself "]
+    #keywords = ["graduate", "graduation", "course", "coursework", "gpa", "credit", "transcript", "requirement", "degree"]
+    #personal_pronouns = [" my ", " i ", " me ", " myself "]
 
-    norm_question = normalize(state["question"])
+    #norm_question = normalize(state["question"])
 
     # Require BOTH a keyword AND a personal reference
-    has_keyword = any(kw in norm_question for kw in keywords)
-    has_pronoun = any(pr in f" {norm_question} " for pr in personal_pronouns)
-    filter_prompt = ("""You are an academic advisor.
-    You have been given some contextual information, and then a user's question.
-    Once you have read both, please determine if you would need to see the user's transcript in order to answer their question.
-    Please answer with [YES] or [NO].
-    ### Context: {context}
-    ### User's question: {question}
-    ### Your answer:""")
-    filter_query = filter_prompt.format(question=state["question"], context=docs_content)
-
-    is_personal = "yes" in normalize(llm.invoke(filter_query).content)
-    print(filter_query)
-    if is_personal:
-        uploaded_content = st.session_state.uploaded_docs["content"]
-        prior_content = ""
-        docs_content = ""
-    else:
-        uploaded_content = ""
-    #print(uploaded_content)
+    #has_keyword = any(kw in norm_question for kw in keywords)
+    #has_pronoun = any(pr in f" {norm_question} " for pr in personal_pronouns)
     if state.get("chat_history", []):
         chat_history = "Dialogue so far:" + "\n".join(
             f"{speaker},{content}" for speaker, content in state["chat_history"][-(MEMORY_LENGTH * 2):] if "transcript.txt" not in content
         )
     else:
         chat_history = ""
+    filter_prompt = ("""
+You are an academic advisor chatbot.
+
+You need to decide whether a user's question REQUIRES access to their PERSONAL INFORMATION or PERSONAL TRANSCRIPT (such as a record of completed courses, grades, or academic standing) to provide a complete and personalized answer.
+
+Answer [YES] if the question depends on personalized data like:
+- What courses the student has already completed
+- The student’s GPA or academic progress
+- Specific degree progress that depends on individual transcripts
++ This includes ANY question where the user is asking for personalized course recommendations, even if they don’t explicitly mention their transcript.
+
+Answer [NO] if the question can be fully answered using ONLY general academic information (such as course catalogs, policies, or standard requirements) WITHOUT needing to know anything about the student’s own transcript.
+
+---
+
+### Examples:
+
+Q: I need a general education course that covers physical activities. Any recommendations?
+A: [NO]
+
+Q: What are the restricted courses that I cannot take for MSSE major as an elective course?
+A: [NO]
+
+Q: What courses should I take next semester?
+A: [YES]
+
+Q: How do I apply for Optional Practical Training (OPT)?
+A: [NO]
+
+Q: What is the GPA requirement for graduation?
+A: [NO]
+
+Q: What electives do I have left?
+A: [YES]
+
+---
+
+### User's question:
+{question}
+
+### Your answer:
+""")
+    filter_query = filter_prompt.format(question=state["question"])
+    filter_ans = normalize(llm.invoke(filter_query).content)
+    is_personal = "yes" in filter_ans
+    print(filter_ans)
+    if is_personal:
+        uploaded_content = st.session_state.uploaded_docs["content"]
+        chat_history = ""
+        prior_content = ""
+        docs_content = ""
+    else:
+        uploaded_content = ""
+    print(uploaded_content)
+
     #print(docs_content)
     messages = prompt_template.format(
         context=docs_content,
@@ -300,7 +337,7 @@ def generate(state: State) -> State:
     #print(response)
     return {"answer": response, "source_documents": state["source_documents"]}
 
-def compare_docs_to_answer(response, docs, embeds, threshold=0.75):
+def compare_docs_to_answer(response, docs, embeds, threshold=0.50):
     response_embedding = embeds.embed_query(response)
     doc_texts = [doc.page_content for doc in docs]
     if not doc_texts:

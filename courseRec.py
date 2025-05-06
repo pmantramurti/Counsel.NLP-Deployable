@@ -83,88 +83,91 @@ def course_recommendation(transcript_courses, student_major):
     return final_recommendation, credits_required
 
 def display_recommendation(courses, final_recommendation, needed_credits, gpa_final, student_major):
-    output_string = "Note: User is only ready to graduate if there are no sections with remaining credits.\n"
-    output_string += "The courses listed below are the only courses that are still required for the degree. If there are no courses recommended, then the user is ready to graduate.\n"
-    output_string += "Make sure to make separate recommendations for each possible specialization, if they exist.\n"
-    output_string += "The below details can be treated as the user's transcript.\n"
-    output_string += "User Transcript: \n Major : " + student_major + " \n Current GPA : " + str(gpa_final) + "\n\n"
-    #output_string += "They have taken :\n"
-    #for course_code, (grade_earned, semester_taken) in courses.items():
-    #    output_string += f"{semester_taken} - {course_code}: {grade_earned}\n"
-    if final_recommendation["Type"] == "mult":
-        for specialization in final_recommendation.keys():
-            if specialization != "Type":
-                output_string += "Remaining required credits for [" + specialization + "] specialization: \n"
-                for category in final_recommendation[specialization].keys():
-                    if isinstance(final_recommendation[specialization][category], dict):
-                        for section in final_recommendation[specialization][category].keys():
-                            if final_recommendation[specialization][category][section] != ["Requirement Met"]:
-                                output_string += "\t" + section.replace("_",
-                                                                        " ").title() + " section of " + category.replace(
-                                    "_", " ").title() + ":" + str(
-                                    needed_credits[specialization][category][section]) + " credits.\n"
-                                output_string += "\t\t Courses user can take: "
-                                #+ final_recommendation[specialization][category][section] + "\n")
-                                #print(final_recommendation[specialization][category][section])
-                                output_string += final_recommendation[specialization][category][section][0]
-                                first = True
-                                for course in final_recommendation[specialization][category][section]:
-                                    if first:
-                                        first = False
-                                    else:
-                                        output_string +=  ", " + course
-                                output_string += "\n"
-                    else:
-                        if final_recommendation[specialization][category] != ["Requirement Met"]:
-                            output_string += "\t" + category.replace("_", " ").title() + ":" + str(
-                                needed_credits[specialization][category]) + " credits.\n"
-                            output_string += "\t\t Courses user can take: "
-                            output_string += final_recommendation[specialization][category][0]
-                            first = True
-                            for course in final_recommendation[specialization][category]:
-                                if first:
-                                    first = False
-                                else:
-                                    output_string += ", " + course
-                            output_string += "\n"
-    else:
-        for category in final_recommendation.keys():
-            if isinstance(final_recommendation[category], dict):
-                for section in final_recommendation[category].keys():
-                    if final_recommendation[category] != ["Requirement Met"]:
-                        output_string += "\t" + section.replace("_", " ").title() + " section of " + category.replace(
-                            "_", " ").title() + ": " + str(needed_credits[category][section]) + " credits.\n"
-                        output_string += "\t\t Courses user can take: "
-                        output_string += final_recommendation[category][0]
-                        first = True
-                        for course in final_recommendation[category]:
-                            if first:
-                                first = False
-                            else:
-                                output_string += ", " + course
-                        output_string += "\n"
+    output_string = (
+        "The courses listed below are the only courses that are still required for the degree.\n"
+        "If there are no courses recommended below, the user is fully ready to graduate.\n"
+        "Separate recommendations are made for each specialization, if they exist.\n"
+        "The following details can be treated as the user's transcript:\n"
+        f"User Transcript:\n Major: {student_major}\n Current GPA: {gpa_final}\n\n"
+    )
+
+    recommendations_found = False  # Track if any recommendations exist
+
+    if final_recommendation.get("Type") == "mult":
+        for specialization, spec_data in final_recommendation.items():
+            if specialization == "Type":
+                continue
+
+            spec_output = f"Remaining required credits for [{specialization}] specialization:\n"
+            spec_has_recs = False
+
+            for category, cat_data in spec_data.items():
+                if isinstance(cat_data, dict):  # Has sections
+                    for section, courses_list in cat_data.items():
+                        if courses_list != ["Requirement Met"]:
+                            credits = needed_credits[specialization][category][section]
+                            course_options = ", ".join(courses_list)
+                            spec_output += (
+                                f"\t{section.replace('_', ' ').title()} section of {category.replace('_', ' ').title()}: "
+                                f"{credits} credits.\n"
+                                f"\t\tCourses you can take (choose one): {course_options}\n"
+                            )
+                            spec_has_recs = True
+                else:
+                    if cat_data != ["Requirement Met"]:
+                        credits = needed_credits[specialization][category]
+                        course_options = ", ".join(cat_data)
+                        spec_output += (
+                            f"\t{category.replace('_', ' ').title()}: {credits} credits.\n"
+                            f"\t\tCourses you can take (choose one): {course_options}\n"
+                        )
+                        spec_has_recs = True
+
+            if spec_has_recs:
+                output_string += spec_output + "\n"
+                recommendations_found = True
             else:
-                if final_recommendation[category] != ["Requirement Met"]:
-                    output_string += "\t" + category.replace("_", " ").title() + " category: " + str(
-                        needed_credits[category]) + " credits.\n"
-                    output_string += "\t\t Courses user can take: "
-                    output_string += final_recommendation[category][0]
-                    first = True
-                    for course in final_recommendation[category]:
-                        if first:
-                            first = False
-                        else:
-                            output_string += ", " + course
-                    output_string += "\n"
-    courses_taken = list(courses.keys())
-    print(courses[courses_taken[0]])
-    output_string += "Completed Courses: " + courses_taken[0] + " - " + courses[courses_taken[0]][2]
-    #print(courses)
-    for course in courses_taken:
-        if course is not courses_taken[0]:
-            output_string += ', ' + course + " - " + courses[course][2]
-    print(output_string)
+                output_string += f"The [{specialization}] specialization has no remaining requirements. The user is ready to graduate for this specialization.\n\n"
+
+    else:
+        # Single specialization case
+        single_output = ""
+        single_has_recs = False
+
+        for category, cat_data in final_recommendation.items():
+            if isinstance(cat_data, dict):  # Has sections
+                for section, courses_list in cat_data.items():
+                    if courses_list != ["Requirement Met"]:
+                        credits = needed_credits[category][section]
+                        course_options = ", ".join(courses_list)
+                        single_output += (
+                            f"\t{section.replace('_', ' ').title()} section of {category.replace('_', ' ').title()}: "
+                            f"{credits} credits.\n"
+                            f"\t\tCourses you can take (choose one): {course_options}\n"
+                        )
+                        single_has_recs = True
+            else:
+                if cat_data != ["Requirement Met"]:
+                    credits = needed_credits[category]
+                    course_options = ", ".join(cat_data)
+                    single_output += (
+                        f"\t{category.replace('_', ' ').title()} category: {credits} credits.\n"
+                        f"\t\tCourses you can take (choose one): {course_options}\n"
+                    )
+                    single_has_recs = True
+
+        if single_has_recs:
+            output_string += single_output + "\n"
+            recommendations_found = True
+        else:
+            output_string += "There are no remaining requirements. The user is ready to graduate.\n\n"
+
+    # Final catch: if absolutely no recommendations were found (empty input case)
+    if not recommendations_found:
+        output_string += "\nNo remaining required courses were found. The user is fully ready to graduate.\n"
+
     return output_string
+
 
 def process_transcript(transcript, major_data, major_struct, specialization = None):
     transcript_courses = copy.deepcopy(transcript)
