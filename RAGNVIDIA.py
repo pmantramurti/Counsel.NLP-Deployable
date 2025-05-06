@@ -256,24 +256,29 @@ def generate(state: State) -> State:
     filter_prompt = ("""
 You are an academic advisor chatbot.
 
-You need to decide whether a user's question REQUIRES access to their PERSONAL INFORMATION or PERSONAL TRANSCRIPT (such as a record of completed courses, grades, or academic standing) to provide a complete and personalized answer.
+Your task is to decide whether a user's question REQUIRES access to their PERSONAL INFORMATION or PERSONAL TRANSCRIPT (such as a record of completed courses, grades, or academic standing) in order to provide a full and personalized answer.
 
 Answer [YES] if the question depends on personalized data like:
-- What courses the student has already completed
+- The specific courses the student has already completed
 - The student’s GPA or academic progress
 - Specific degree progress that depends on individual transcripts
-+ This includes ANY question where the user is asking for personalized course recommendations, even if they don’t explicitly mention their transcript.
+- This includes any question asking for personalized course recommendations (for example, "What should I take next?"), even if no transcript is explicitly mentioned.
 
-Answer [NO] if the question can be fully answered using ONLY general academic information (such as course catalogs, policies, or standard requirements) WITHOUT needing to know anything about the student’s own transcript.
+Answer [NO] if the question can be fully answered using only general academic information (such as course catalogs, official policies, standard program requirements, or general degree rules) without needing to know anything about the student’s personal transcript.
 
----
+Important clarification:
+If the question simply mentions the user's major or program (for example, "As an MSSE major...") but does not ask for personalized progress based on their transcript, treat it as a general question.
+Do not assume a question needs personal data just because the major or specialization is mentioned.
 
-### Examples:
+Examples:
 
 Q: I need a general education course that covers physical activities. Any recommendations?
 A: [NO]
 
 Q: What are the restricted courses that I cannot take for MSSE major as an elective course?
+A: [NO]
+
+Q: As an MSSE major, what electives are restricted?
 A: [NO]
 
 Q: What courses should I take next semester?
@@ -282,18 +287,19 @@ A: [YES]
 Q: How do I apply for Optional Practical Training (OPT)?
 A: [NO]
 
-Q: What is the GPA requirement for graduation?
-A: [NO]
-
 Q: What electives do I have left?
 A: [YES]
 
----
+Q: What is the GPA requirement for graduation?
+A: [NO]
 
-### User's question:
+Q: Based on my transcript, what electives do I have left?
+A: [YES]
+
+User's question:
 {question}
 
-### Your answer:
+Your answer:
 """)
     filter_query = filter_prompt.format(question=state["question"])
     filter_ans = normalize(llm.invoke(filter_query).content)
