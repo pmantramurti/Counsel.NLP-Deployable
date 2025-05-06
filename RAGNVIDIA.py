@@ -248,12 +248,12 @@ def generate(state: State) -> State:
     has_keyword = any(kw in norm_question for kw in keywords)
     has_pronoun = any(pr in f" {norm_question} " for pr in personal_pronouns)
 
-    if has_keyword and has_pronoun:
-        uploaded_content = st.session_state.uploaded_docs["content"]
-        prior_content = ""
-        docs_content = ""
-    else:
-        uploaded_content = ""
+    #if has_keyword and has_pronoun:
+    uploaded_content = st.session_state.uploaded_docs["content"]
+        #prior_content = ""
+        #docs_content = ""
+    #else:
+        #uploaded_content = ""
     #print(uploaded_content)
     if state.get("chat_history", []):
         chat_history = "Dialogue so far:" + "\n".join(
