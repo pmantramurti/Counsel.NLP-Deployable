@@ -73,6 +73,7 @@ def course_recommendation(transcript_courses, student_major):
     final_recommendation = {}
     credits_required = {}
     if "specialization_tracks" in major_struct:
+        print(major_data["specialization_tracks"].keys())
         for specialization in major_data["specialization_tracks"].keys():
             final_recommendation[specialization], credits_required[specialization] = process_transcript(transcript_courses, major_data, major_struct, specialization)
         final_recommendation["Type"] = "mult"
@@ -170,6 +171,7 @@ def process_transcript(transcript, major_data, major_struct, specialization = No
     transcript_courses = copy.deepcopy(transcript)
     recommended_courses = {}
     credits_required = {}
+    print(major_data["specialization_tracks"].keys())
     for category, requirement in major_struct.items():
         # int in struct and array in overall = take at least int credits worth of courses in array
         if isinstance(requirement, int) and isinstance(major_data[category], list):
