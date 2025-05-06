@@ -187,6 +187,7 @@ def process_transcript(transcript, major_data, major_struct, specialization = No
 
         if isinstance(requirement, int) and isinstance(major_data[category], dict) and category != "culminating_experience":
             # print(major_data[category])
+            print(major_data[category])
             course_options_temp = [[listing["course"], listing["units"]] for listing in major_data[category][specialization]]
             course_options = [[listing["course"], listing["units"]] for listing in major_data[category][specialization]]
             credits_taken, course_options, transcript_courses = check_courses(course_options, transcript_courses, course_options_temp)
