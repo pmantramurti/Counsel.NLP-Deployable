@@ -1,9 +1,9 @@
 #import os
 #os.environ["TORCH_DISABLE_SOURCE_WATCHER"] = "none"
 print("Starting")
-__import__('pysqlite3')
-import sys
-sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+#__import__('pysqlite3')
+#import sys
+#sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 print("Importing streamlit")
 import torch
 import os
@@ -37,8 +37,10 @@ if "user_input" not in st.session_state:
     st.session_state.user_input = ""
 if "user_input_given" not in st.session_state:
     st.session_state.user_input_given = False
+
 if "curr_docs_retrieved" not in st.session_state:
     st.session_state.curr_docs_retrieved = ""
+
 chat_html = """
 <div id='chat-box' style='height: 400px; overflow-y: auto; padding: 1em; border: 1px solid #ccc; background-color: var(--background-color);'>
 """
@@ -46,6 +48,8 @@ chat_html += "\n"
 for speaker, message in st.session_state.chat_history:
     newline_msg = re.sub(r'\s(\d+\.\s)', r'\n\1', message)
     newline_msg = re.sub(r' - ', r'\n - ', newline_msg)
+    print(newline_msg)
+    print(st.session_state.curr_docs_retrieved)
     chat_html += f"**{speaker}:**\n\n {newline_msg}\n\n"
 
 chat_html += st.session_state.curr_docs_retrieved
@@ -73,8 +77,8 @@ if correct_file:
     for file in uploaded_files:
         if file.name == "ps.xls":
             current_courses = courseRec.parse_course_list(file)
-            for course, semester in current_courses:
-                courses_taken[course] = ["In Progress", semester]
+            for course, semester, name in current_courses:
+                courses_taken[course] = ["In Progress", semester, name]
 
     course_rec, cred_req = courseRec.course_recommendation(courses_taken, major)
     user_info = courseRec.display_recommendation(courses_taken, course_rec, cred_req, curr_gpa, major)

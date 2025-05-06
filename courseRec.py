@@ -50,10 +50,10 @@ def parse_course_list(file):
         # If no tables found, fallback to reading as Excel
         transcript = pd.read_excel(file, header=None)
     print(transcript)
-    transcript.drop(columns=['Description', 'Units', 'Grd Points', 'Repeat Code','Reqmnt Desig', 'Status'], inplace=True)
+    transcript.drop(columns=['Units', 'Grd Points', 'Repeat Code','Reqmnt Desig', 'Status'], inplace=True)
     transcript = transcript[transcript['Grade'].isna()]
     transcript.drop(columns=['Grade'], inplace=True)
-    courses = [list(pair) for pair in zip(transcript['Course'], transcript['Term'])]
+    courses = [list(pair) for pair in zip(transcript['Course'], transcript['Term'], transcript['Description'])]
     return courses
 
 def course_recommendation(transcript_courses, student_major):
@@ -73,7 +73,6 @@ def course_recommendation(transcript_courses, student_major):
     final_recommendation = {}
     credits_required = {}
     if "specialization_tracks" in major_struct:
-        print(major_data["specialization_tracks"].keys())
         for specialization in major_data["specialization_tracks"].keys():
             final_recommendation[specialization], credits_required[specialization] = process_transcript(transcript_courses, major_data, major_struct, specialization)
         final_recommendation["Type"] = "mult"
@@ -119,7 +118,7 @@ def display_recommendation(courses, final_recommendation, needed_credits, gpa_fi
                         if final_recommendation[specialization][category] != ["Requirement Met"]:
                             output_string += "\t" + category.replace("_", " ").title() + ":" + str(
                                 needed_credits[specialization][category]) + " credits.\n"
-                            output_string += "\t\t Courses user can take:"
+                            output_string += "\t\t Courses user can take: "
                             output_string += final_recommendation[specialization][category][0]
                             first = True
                             for course in final_recommendation[specialization][category]:
@@ -135,7 +134,7 @@ def display_recommendation(courses, final_recommendation, needed_credits, gpa_fi
                     if final_recommendation[category] != ["Requirement Met"]:
                         output_string += "\t" + section.replace("_", " ").title() + " section of " + category.replace(
                             "_", " ").title() + ": " + str(needed_credits[category][section]) + " credits.\n"
-                        output_string += "\t\t Courses user can take:"
+                        output_string += "\t\t Courses user can take: "
                         output_string += final_recommendation[category][0]
                         first = True
                         for course in final_recommendation[category]:
@@ -148,7 +147,7 @@ def display_recommendation(courses, final_recommendation, needed_credits, gpa_fi
                 if final_recommendation[category] != ["Requirement Met"]:
                     output_string += "\t" + category.replace("_", " ").title() + " category: " + str(
                         needed_credits[category]) + " credits.\n"
-                    output_string += "\t\t Courses user can take:"
+                    output_string += "\t\t Courses user can take: "
                     output_string += final_recommendation[category][0]
                     first = True
                     for course in final_recommendation[category]:
@@ -171,7 +170,6 @@ def process_transcript(transcript, major_data, major_struct, specialization = No
     transcript_courses = copy.deepcopy(transcript)
     recommended_courses = {}
     credits_required = {}
-    print(major_data["specialization_tracks"].keys())
     for category, requirement in major_struct.items():
         # int in struct and array in overall = take at least int credits worth of courses in array
         if isinstance(requirement, int) and isinstance(major_data[category], list):
@@ -187,7 +185,6 @@ def process_transcript(transcript, major_data, major_struct, specialization = No
 
         if isinstance(requirement, int) and isinstance(major_data[category], dict) and category != "culminating_experience":
             # print(major_data[category])
-            print(major_data[category])
             course_options_temp = [[listing["course"], listing["units"]] for listing in major_data[category][specialization]]
             course_options = [[listing["course"], listing["units"]] for listing in major_data[category][specialization]]
             credits_taken, course_options, transcript_courses = check_courses(course_options, transcript_courses, course_options_temp)
