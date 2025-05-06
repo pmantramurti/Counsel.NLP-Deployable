@@ -1,9 +1,9 @@
 #import os
 #os.environ["TORCH_DISABLE_SOURCE_WATCHER"] = "none"
 print("Starting")
-__import__('pysqlite3')
-import sys
-sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+#__import__('pysqlite3')
+#import sys
+#sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 print("Importing streamlit")
 import torch
 import os
@@ -27,7 +27,7 @@ import re
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 if "uploaded_docs" not in st.session_state:
-    user_info = "IMPORTANT: If you need information about the user, ask them to upload 'transcript.txt' as your response."
+    user_info = "IMPORTANT: If the question is about the user's coursework or about their graduation, then ask them to upload 'transcript.txt' as your response. For anything else, skip this line and use the rest of the information provided to answer their question"
     st.session_state.uploaded_docs = {"name": "user_info", "content": user_info}
 if "all_documents" not in st.session_state:
     st.session_state.all_documents = []
