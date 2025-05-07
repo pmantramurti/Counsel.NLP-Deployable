@@ -325,7 +325,7 @@ def generate(state: State) -> State:
         question=state["question"],
         chat_history=chat_history
     )
-    print(messages)
+    #print(messages)
     response = llm.invoke(messages).content
     num_docs = 0
 
