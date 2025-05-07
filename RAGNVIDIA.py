@@ -269,6 +269,7 @@ def generate(state: State) -> State:
     Important clarification:
     - If the question asks for general course ideas (for example, "I need a general education course that covers physical activities. Any recommendations?"), classify it as [NO] because no transcript is needed.
     - If the question mentions the user’s major (for example, "What electives are available for the MSSE major?"), but does not ask about the student's personal progress or completed courses, classify it as [NO].
+    - If the question is about whether the user is eligible or ready to graduate (e.g., "Am I ready to graduate?"), classify it as [YES], because this requires personal transcript information.
 
     Examples:
 
@@ -294,6 +295,9 @@ def generate(state: State) -> State:
     A: [NO]
 
     Q: Based on my transcript, what electives do I have left?
+    A: [YES]
+
+    Q: Am I ready to graduate?
     A: [YES]
 
     User's question:
