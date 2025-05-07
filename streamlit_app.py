@@ -10,7 +10,7 @@ import os
 torch.classes.__path__ = [os.path.join(torch.__path__[0], torch.classes.__file__)]
 import streamlit as st
 print("Streamlit imported")
-st.set_page_config(page_title="Academic Advisor Chatbot", layout="wide")
+st.set_page_config(page_title="Counsel.NLP Chatbot", layout="wide")
 print("Importing RAG.py")
 import RAGNVIDIA
 #import RAG
@@ -19,16 +19,121 @@ print("RAG.py imported")
 import sqlite3
 print("Setup Complete")
 import courseRec
-st.markdown("## Counsel.NLP: Smart Academic Advising Chatbot")
 import re
 
+# Global CSS for nicer styling
+st.markdown("""
+    <style>
+        body {font-family: 'Segoe UI', sans-serif;}
+        .block-container {padding-top: 2rem;}
+    </style>
+""", unsafe_allow_html=True)
+
+st.title("🎓 Counsel.NLP - Academic Advising Chatbot")
+
+# Expander with rich instructions
+with st.expander("💬 What can I ask this chatbot?"):
+    st.markdown("""
+### ✅ **What You Can Ask Counsel.NLP**
+
+Counsel.NLP can help answer academic advising questions based on over **1000 courses** and **general advising topics** at San José State University (SJSU), specifically for the **MSAI, MSCS, and MSSE programs due to time constraint**.
+
+---
+
+#### 🧾 **Course-Level Questions**
+- **Descriptions of courses**  
+  ➤ “What is the description for CMPE 257?”  
+- **Units for a course**  
+  ➤ “How many units is CS 156?”  
+- **Prerequisites or corequisites**  
+  ➤ “What are the prerequisites for CMPE 260?”  
+- **Categories or special notes**  
+  ➤ “Which movement area does KIN 2B fulfill?”  
+- **Class structure**  
+  ➤ “What’s the class format for AE 110?”
+- **Grading**  
+  ➤ “What is the grading system for CHIN 132?”
+
+---
+
+#### 🧑‍🎓 **Program-Level Questions (MSAI, MSCS, MSSE)**
+- **Core courses**  
+  ➤ “What are the core courses for the MSAI major?” 
+- **Prerequisites**  
+  ➤ “What are the prerequisites for the MSCMPE major?”   
+- **Electives and specialization tracks**  
+  ➤ “What electives can I take for MSSE?”  
+  ➤ “What are specialization tracks for MSAI major?”  
+- **Culminating experience options**  
+  ➤ “What are the culminating experience options for the MSSE major?”  
+- **Graduate writing requirements**  
+  ➤ “Do I need to complete GWAR for MSCS?”
+
+---
+
+#### 🧩 **General Advising and Administrative Topics**
+- **Provisional admission status**  
+  ➤ “How can I clear my provisional admission status as a graduate student?”
+
+- **Residency classification for tuition**  
+  ➤ “How do I confirm my California residency status for tuition purposes?”
+
+- **Leave of absence policy**  
+  ➤ “Can I take a semester off from my graduate program?”
+
+- **Switching graduate programs**  
+  ➤ “How do I switch to a different graduate program?”
+
+- **Double enrollment restrictions**  
+  ➤ “Can I enroll in two master's programs at the same time?”
+
+- **Undergraduate coursework in GPA**  
+  ➤ “Are undergraduate courses included in my graduate GPA?”
+
+- **Graduation timeline and forms**  
+  ➤ “What forms are needed to apply for graduation?”  
+  ➤ “How do I change my expected graduation date?”  
+  ➤ “What is the deadline for submitting my candidacy form?”
+
+- **Transfer credit policies**  
+  ➤ “Can I transfer courses from another institution to my graduate degree?”
+
+- **Academic standing and GPA**  
+  ➤ “What GPA do I need to maintain for good academic standing?”  
+  ➤ “What grades are considered satisfactory or unsatisfactory?”
+
+- **Maintaining F-1 status**  
+  ➤ “What are the requirements to maintain my F-1 visa status?”
+
+- **J-1 visitor program**  
+  ➤ “What are the eligibility requirements for the J-1 exchange visitor program?”
+
+- **Financial aid support**  
+  ➤ “Who can I contact for financial aid or scholarships?”
+
+- **Mental health and counseling services**  
+  ➤ “Does SJSU offer counseling or wellness support for students?”
+
+- **Alumni connections and career services**  
+  ➤ “Are there organizations where I can connect with SJSU alumni?”  
+  ➤ “What support does the Writing Center or Career Center offer graduate students?”
+
+---
+
+#### 📎 **How to Upload Your Transcript**
+To ask questions about graduation eligibility or course recommendations, please upload your transcript in a file named `transcript.txt`.
+
+To include your current enrolled courses:
+1. Visit the **Course History** section in your [MySJSU portal](https://one.sjsu.edu).
+2. Click **Download** to export your course list as `ps.xls`.
+3. Upload the `ps.xls` file here so the advisor can check your academic progress and provide more accurate guidance.
+""")
+
 # Initialize session states
-if 'show_instructions' not in st.session_state:
-    st.session_state.show_instructions = False
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 if "uploaded_docs" not in st.session_state:
-    user_info = "IMPORTANT: Ask them to upload 'transcript.txt' as your response."
+    user_info = "Ask the user to upload 'transcript.txt' for more information."
     st.session_state.uploaded_docs = {"name": "user_info", "content": user_info}
 if "all_documents" not in st.session_state:
     st.session_state.all_documents = []
@@ -41,41 +146,21 @@ if "user_input_given" not in st.session_state:
 if "curr_docs_retrieved" not in st.session_state:
     st.session_state.curr_docs_retrieved = ""
 
-button_label = "ℹ️"
-
-if st.button(button_label):
-    st.session_state.show_instructions = not st.session_state.show_instructions
-
-if st.session_state.show_instructions:
-    st.info("""
-    1. Copy and paste your unofficial transcript into 'transcript.txt' and upload it when prompted for questions related to graduation or course recommendations.
-    2. To include your current courses, navigate to Course History in one.sjsu, and select download to receive a file called ps.xls, and upload this as well.
-    3. Avoid overly general questions, and try to be specific with what you want.
-    """)
-
-chat_html = """
-<div id='chat-box' style='height: 300px; overflow-y: auto; padding: 1em; border: 1px solid #ccc; background-color: var(--background-color);'>
-"""
-chat_html += "\n"
+# Render chat history using st.chat_message
 for speaker, message in st.session_state.chat_history:
-    newline_msg = re.sub(r'\s(\d+\.\s)', r'\n\1', message)
-    newline_msg = re.sub(r' - ', r'\n - ', newline_msg)
-    print(newline_msg)
-    #print(st.session_state.curr_docs_retrieved)
-    chat_html += f"**{speaker}:**\n\n {newline_msg}\n\n"
+    with st.chat_message("user" if speaker == "User" else "Advisor"):
+        formatted_msg = re.sub(r'\s(\d+\.\s)', r'\n\1', message)
+        formatted_msg = re.sub(r' - ', r'\n - ', formatted_msg)
+        st.markdown(formatted_msg)
 
-#chat_html += st.session_state.curr_docs_retrieved
-chat_html += "</div>"
-st.markdown(chat_html, unsafe_allow_html=True)
-
-user_input = st.chat_input("Ask a question:")
+# Chat input
+user_input = st.chat_input("Ask a question about your courses, program, or advising...")
 if user_input and user_input.strip():
     st.session_state.chat_history.append(("User", user_input.strip()))
     st.session_state.awaiting_response = True
     st.rerun()
-
 # Upload documents
-uploaded_files = st.file_uploader("Upload transcript.txt and optionally ps.xls here.",type=["txt", "xls"], accept_multiple_files=True)
+uploaded_files = st.file_uploader("📎 Upload transcript.txt and optionally ps.xls", type=["txt", "xls"], accept_multiple_files=True)
 correct_file = False
 for file in uploaded_files:
     if file.name == "transcript.txt":
@@ -94,12 +179,13 @@ if correct_file:
     course_rec, cred_req = courseRec.course_recommendation(courses_taken, major)
     user_info = courseRec.display_recommendation(courses_taken, course_rec, cred_req, curr_gpa, major)
     st.session_state.uploaded_docs = {"name": "user_info", "content": user_info}
+# Process user question
 if st.session_state.get("awaiting_response", False):
     with st.spinner("Advisor is typing..."):
         user_message = st.session_state.chat_history[-1][1]
         history_without_last = st.session_state.chat_history[:-1]
 
         response = RAGNVIDIA.get_chatbot_response(user_message, st.session_state.uploaded_docs, history_without_last)
-        st.session_state.chat_history.append(("Advisor", response))#.replace('\n', '<br>')))
+        st.session_state.chat_history.append(("Advisor", response))
         st.session_state.awaiting_response = False
         st.rerun()

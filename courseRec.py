@@ -108,9 +108,9 @@ def display_recommendation(courses, final_recommendation, needed_credits, gpa_fi
                             credits = needed_credits[specialization][category][section]
                             course_options = ", ".join(courses_list)
                             spec_output += (
-                                f"\t{section.replace('_', ' ').title()} section of {category.replace('_', ' ').title()}: "
+                                f"\t{section.replace('_', ' ').title()} section of {category.replace('_', ' ').title()} still requires: "
                                 f"{credits} credits.\n"
-                                f"\t\tCourses you can take (choose one): {course_options}\n"
+                                f"\t\tCourses you can take: {course_options}\n"
                             )
                             spec_has_recs = True
                 else:
@@ -118,8 +118,8 @@ def display_recommendation(courses, final_recommendation, needed_credits, gpa_fi
                         credits = needed_credits[specialization][category]
                         course_options = ", ".join(cat_data)
                         spec_output += (
-                            f"\t{category.replace('_', ' ').title()}: {credits} credits.\n"
-                            f"\t\tCourses you can take (choose one): {course_options}\n"
+                            f"\t{category.replace('_', ' ').title()} still requires: {credits} credits.\n"
+                            f"\t\tCourses you can take: {course_options}\n"
                         )
                         spec_has_recs = True
 
@@ -141,9 +141,9 @@ def display_recommendation(courses, final_recommendation, needed_credits, gpa_fi
                         credits = needed_credits[category][section]
                         course_options = ", ".join(courses_list)
                         single_output += (
-                            f"\t{section.replace('_', ' ').title()} section of {category.replace('_', ' ').title()}: "
+                            f"\t{section.replace('_', ' ').title()} section of {category.replace('_', ' ').title()} still requires: "
                             f"{credits} credits.\n"
-                            f"\t\tCourses you can take (choose one): {course_options}\n"
+                            f"\t\tCourses you can take: {course_options}\n"
                         )
                         single_has_recs = True
             else:
@@ -151,8 +151,8 @@ def display_recommendation(courses, final_recommendation, needed_credits, gpa_fi
                     credits = needed_credits[category]
                     course_options = ", ".join(cat_data)
                     single_output += (
-                        f"\t{category.replace('_', ' ').title()} category: {credits} credits.\n"
-                        f"\t\tCourses you can take (choose one): {course_options}\n"
+                        f"\t{category.replace('_', ' ').title()} category still requires: {credits} credits.\n"
+                        f"\t\tCourses you can take: {course_options}\n"
                     )
                     single_has_recs = True
 

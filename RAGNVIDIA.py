@@ -220,16 +220,16 @@ If you can't answer the question, try and answer with what information you have,
 
 {chat_history}
 
-Context:
 {context}
 
 {prior_context}
 
+Instead of making reference to the provided information just answer as if it was part of your knowledge base.
 ### User: {question}
 ### Advisor:
 """
 def generate(state: State) -> State:
-    docs_content = "\n\n".join(doc.page_content for doc in state["context"])
+    docs_content = "Context:\n\n" + "\n\n".join(doc.page_content for doc in state["context"])
     st.session_state.curr_docs_retrieved = docs_content
     prior_docs_count = int(np.sum(st.session_state.docs_saved[-MEMORY_LENGTH:]))
     prior_content = (
@@ -254,56 +254,56 @@ def generate(state: State) -> State:
     else:
         chat_history = ""
     filter_prompt = ("""
-    You are an academic advisor chatbot.
+        You are an academic advisor chatbot.
 
-    Your task is to decide whether a user's question REQUIRES access to their PERSONAL INFORMATION or PERSONAL TRANSCRIPT (such as a record of completed courses, grades, or academic standing) in order to provide a full and personalized answer.
+        Your task is to decide whether a user's question REQUIRES access to their PERSONAL INFORMATION or PERSONAL TRANSCRIPT (such as a record of completed courses, grades, or academic standing) in order to provide a full and personalized answer.
 
-    Answer [YES] if the question depends on personalized data like:
-    - The specific courses the student has already completed
-    - The student’s GPA or academic progress
-    - Specific degree progress that depends on individual transcripts
-    - The user is asking for recommendations that depend on their own record (for example, "What courses should I take next semester?" or "What electives do I have left?")
+        Answer [YES] if the question depends on personalized data like:
+        - The specific courses the student has already completed
+        - The student’s GPA or academic progress
+        - Specific degree progress that depends on individual transcripts
+        - The user is asking for recommendations that depend on their own record (for example, "What courses should I take next semester?" or "What electives do I have left?")
 
-    Answer [NO] if the question can be fully answered using only general academic information (such as course catalogs, official policies, standard program requirements, or general degree rules), without needing to know anything about the student’s personal transcript.
+        Answer [NO] if the question can be fully answered using only general academic information (such as course catalogs, official policies, standard program requirements, or general degree rules), without needing to know anything about the student’s personal transcript.
 
-    Important clarification:
-    - If the question asks for general course ideas (for example, "I need a general education course that covers physical activities. Any recommendations?"), classify it as [NO] because no transcript is needed.
-    - If the question mentions the user’s major (for example, "What electives are available for the MSSE major?"), but does not ask about the student's personal progress or completed courses, classify it as [NO].
-    - If the question is about whether the user is eligible or ready to graduate (e.g., "Am I ready to graduate?"), classify it as [YES], because this requires personal transcript information.
+        Important clarification:
+        - If the question asks for general course ideas (for example, "I need a general education course that covers physical activities. Any recommendations?"), classify it as [NO] because no transcript is needed.
+        - If the question mentions the user’s major (for example, "What electives are available for the MSSE major?"), but does not ask about the student's personal progress or completed courses, classify it as [NO].
+        - If the question is about whether the user is eligible or ready to graduate (e.g., "Am I ready to graduate?"), classify it as [YES], because this requires personal transcript information.
 
-    Examples:
+        Examples:
 
-    Q: I need a general education course that covers physical activities. Any recommendations?
-    A: [NO]
+        Q: I need a general education course that covers physical activities. Any recommendations?
+        A: [NO]
 
-    Q: What are the restricted courses that I cannot take for MSSE major as an elective course?
-    A: [NO]
+        Q: What are the restricted courses that I cannot take for MSSE major as an elective course?
+        A: [NO]
 
-    Q: As an MSSE major, what electives are restricted?
-    A: [NO]
+        Q: As an MSSE major, what electives are restricted?
+        A: [NO]
 
-    Q: What courses should I take next semester?
-    A: [YES]
+        Q: What courses should I take next semester?
+        A: [YES]
 
-    Q: How do I apply for Optional Practical Training (OPT)?
-    A: [NO]
+        Q: How do I apply for Optional Practical Training (OPT)?
+        A: [NO]
 
-    Q: What electives do I have left?
-    A: [YES]
+        Q: What electives do I have left?
+        A: [YES]
 
-    Q: What is the GPA requirement for graduation?
-    A: [NO]
+        Q: What is the GPA requirement for graduation?
+        A: [NO]
 
-    Q: Based on my transcript, what electives do I have left?
-    A: [YES]
+        Q: Based on my transcript, what electives do I have left?
+        A: [YES]
 
-    Q: Am I ready to graduate?
-    A: [YES]
+        Q: Am I ready to graduate?
+        A: [YES]
 
-    User's question:
-    {question}
-    Your answer:
-    """)
+        User's question:
+        {question}
+        Your answer:
+        """)
     filter_query = filter_prompt.format(question=state["question"])
     filter_ans = normalize(llm.invoke(filter_query).content)
     is_personal = "yes" in filter_ans
@@ -317,7 +317,7 @@ def generate(state: State) -> State:
         uploaded_content = ""
     #print(uploaded_content)
 
-    #print(docs_content)
+    print(docs_content)
     messages = prompt_template.format(
         context=docs_content,
         prior_context=prior_content,
@@ -325,7 +325,7 @@ def generate(state: State) -> State:
         question=state["question"],
         chat_history=chat_history
     )
-    #print(messages)
+    print(messages)
     response = llm.invoke(messages).content
     num_docs = 0
 
