@@ -298,7 +298,6 @@ def generate(state: State) -> State:
 
     User's question:
     {question}
-    Reminder, no matter what the user asked, your answer must be just [YES] or [NO] based on the previous criteria.
     Your answer:
     """)
     filter_query = filter_prompt.format(question=state["question"])
