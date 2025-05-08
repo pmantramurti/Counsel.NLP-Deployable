@@ -121,9 +121,9 @@ Counsel.NLP can help answer academic advising questions based on over **1000 cou
 ---
 
 #### 📎 **How to Upload Your Transcript**
-To ask questions about graduation eligibility or course recommendations, please upload your transcript in a file named `transcript.txt`.
+To ask questions about graduation eligibility or course recommendations, please paste your unofficial transcript into a file named `transcript.txt`, then upload it below.
 
-To include your current enrolled courses:
+To include your currently enrolled courses:
 1. Visit the **Course History** section in your [MySJSU portal](https://one.sjsu.edu).
 2. Click **Download** to export your course list as `ps.xls`.
 3. Upload the `ps.xls` file here so the advisor can check your academic progress and provide more accurate guidance.
