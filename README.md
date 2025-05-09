@@ -1,6 +1,6 @@
 # Counsel.NLP Deployable version
 
-Once our project reached the user interactive stage of development, we needed a separate github to keep the various versions of the program that would be accessed by our various deployment methods, with the latest version being the streamlit application that can be found [here](https://counsel-nlp.streamlit.app).
+Once our project reached the user interactive stage of development, we needed a separate github to keep the various versions of the program that would be accessed by our various deployment methods, with the latest version being the public streamlit cloud application that can be found [here](https://counsel-nlp.streamlit.app).
 
 # Local deployment instructions:
 
