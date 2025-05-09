@@ -9,4 +9,4 @@ In order to run the program locally, take the following steps:
 ### A. Download program files: The [model backend](RAGNVIDIA.py), the [streamlit frontend](streamlit_app.py), and the [transcript handler](courseRec.py)
 ### B. Download dataset files: The [course list](courses.txt), the [vector store zip file](vector__store.zip), the [MSAI file](msai_dataset.json), the [MSCMPE file](mscmpe_dataset.json) and the [MSSE file](msse_dataset.json).
 ## 2. Execution
-### A. Store all the files in the same folder, then run the following command - /streamlit run streamlit_app.py/
+### A. Store all the files in the same folder, then run the following command - `streamlit run streamlit_app.py`
