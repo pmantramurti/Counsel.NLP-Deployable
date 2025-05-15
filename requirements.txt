@@ -16,3 +16,4 @@ numpy
 torch
 langchain_nvidia_ai_endpoints
 markdown
+lxml
