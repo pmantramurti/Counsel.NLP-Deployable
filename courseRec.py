@@ -106,7 +106,9 @@ def display_recommendation(courses, final_recommendation, needed_credits, gpa_fi
                     for section, courses_list in cat_data.items():
                         if courses_list != ["Requirement Met"]:
                             credits = needed_credits[specialization][category][section]
-                            course_options = ", ".join(courses_list)
+                            course_options = ", ".join(
+                                [item if isinstance(item, str) else item[0] for item in courses_list]
+                            )
                             spec_output += (
                                 f"\t{section.replace('_', ' ').title()} section of {category.replace('_', ' ').title()} still requires: "
                                 f"{credits} credits.\n"
