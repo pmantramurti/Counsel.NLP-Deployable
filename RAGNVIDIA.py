@@ -62,7 +62,7 @@ def load_llm():
             repetition_penalty=1.02
         )
     except Exception as e:
-        st.error("🚨 Could not load the LLM. Check your token or connectivity.")
+        st.error(f"🚨 Could not load the LLM. Check your token or connectivity. Reason: {e}")
         st.stop()
 
 
