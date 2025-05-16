@@ -87,6 +87,13 @@ def display_recommendation(courses, final_recommendation, needed_credits, gpa_fi
         "The courses listed below are the only courses that are still required for the degree.\n"
         "If there are no courses recommended below, the user is fully ready to graduate.\n"
         "Separate recommendations are made for each specialization, if they exist.\n"
+        "When there are a lot of courses to recommend, recommend courses by this order of priority:\n"
+        "Core Courses\n"
+        "Specialization\n"
+        "Electives\n"
+        "Writing Credit\n"
+        "Culminating Experience\n"
+        "The sections may not match these exactly, and some may not be present.\n"
         "The following details can be treated as the user's transcript:\n"
         f"User Transcript:\n Major: {student_major}\n Current GPA: {gpa_final}\n\n"
     )
