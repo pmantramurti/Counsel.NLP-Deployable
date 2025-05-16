@@ -94,6 +94,7 @@ def display_recommendation(courses, final_recommendation, needed_credits, gpa_fi
         "Writing Credit\n"
         "Culminating Experience\n"
         "Note, skip the listed categories that are not mentioned below.\n"
+        "Note, courses under Culminating Experience should only be recommended if no other courses are listed.\n"
         "The following details can be treated as the user's transcript:\n"
         f"User Transcript:\n Major: {student_major}\n Current GPA: {gpa_final}\n\n"
     )
