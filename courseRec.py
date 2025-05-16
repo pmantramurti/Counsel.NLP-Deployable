@@ -91,6 +91,7 @@ def display_recommendation(courses, final_recommendation, needed_credits, gpa_fi
         "Core Courses, Specialization, Electives, Writing Credit, Culminating Experience\n"
         "Skip the listed categories that are not mentioned below.\n"
         "Culminating Experience courses can only be recommended if the rest of the listed courses number less than 4.\n"
+        "If there are multiple specializations, when recommending for an upcoming semester, recommend a set for each.\n"
         "The following details can be treated as the user's transcript:\n"
         f"User Transcript:\n Major: {student_major}\n Current GPA: {gpa_final}\n\n"
     )
