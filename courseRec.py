@@ -93,7 +93,7 @@ def display_recommendation(courses, final_recommendation, needed_credits, gpa_fi
         "Electives\n"
         "Writing Credit\n"
         "Culminating Experience\n"
-        "The sections may not match these exactly, and some may not be present.\n"
+        "Note, if a given priority is not listed below, skip it.\n"
         "The following details can be treated as the user's transcript:\n"
         f"User Transcript:\n Major: {student_major}\n Current GPA: {gpa_final}\n\n"
     )
