@@ -58,7 +58,7 @@ def load_llm():
             model="meta/llama-3.2-3b-instruct",
             api_key="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",
             temperature=0.4,
-            max_tokens=256,
+            max_tokens=512,
             repetition_penalty=1.02
         )
     except Exception as e:
