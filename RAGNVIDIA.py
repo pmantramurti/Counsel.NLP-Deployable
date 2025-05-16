@@ -52,7 +52,7 @@ def load_vector_store():
 def load_llm():
     try:
         print("Logging in")
-        login(st.secrets.get("HF_TOKEN", ""))
+        #login(st.secrets.get("HF_TOKEN", ""))
         print("Loading model pipeline")
         return ChatNVIDIA(
             model="meta/llama-3.2-3b-instruct",
