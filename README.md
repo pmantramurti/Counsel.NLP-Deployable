@@ -2,6 +2,8 @@
 
 Once our project reached the user interactive stage of development, we needed a separate github to keep the various versions of the program that would be accessed by our various deployment methods, with the latest version being the public streamlit cloud application that can be found [here](https://counsel-nlp.streamlit.app). The app may need a few minutes to boot up if it hasn't been viewed by anyone in a while.
 
+For more information on the development of this project, look [here](https://github.com/jeffreyong15/Counsel.NLP).
+
 # Local deployment instructions:
 
 In order to run the program locally, take the following steps:
